@@ -20,29 +20,40 @@
   header{padding:22px 0 12px;max-width:900px}
   .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 6px}
   h1{margin:0 0 6px;font-size:clamp(1.5rem,3.4vw,2.2rem);letter-spacing:-.01em}
+  h3{margin:14px 0 6px;font-size:1rem}
   .consigne{margin:0;color:var(--muted);line-height:1.55}
   .consigne b{color:var(--ink);font-weight:650}
 
   button,select,input,textarea{font:inherit;color:var(--ink)}
   button{font-size:.9rem;font-weight:550;cursor:pointer;border:1px solid var(--border);background:var(--card);border-radius:8px;padding:8px 13px;min-height:40px}
-  button:hover{border-color:var(--accent)}
+  button:hover:not(:disabled){border-color:var(--accent)}
   button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
   button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
   button:disabled{opacity:.5;cursor:not-allowed}
-  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  a.btn{display:inline-flex;align-items:center;text-decoration:none;font-size:.9rem;font-weight:550;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:8px 13px;min-height:40px}
+  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
   input,select,textarea{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;width:100%;min-height:40px}
+  input:disabled,select:disabled,textarea:disabled{opacity:.65}
   input.bad,select.bad{border-color:var(--danger)}
+  input[type=radio]{width:auto;min-height:0}
   textarea{min-height:76px;resize:vertical}
   label{display:block;font-size:.76rem;font-weight:650;color:var(--muted);margin:0 0 3px}
   [hidden]{display:none!important}
 
   .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
   .card h2{margin:0 0 10px;font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-  .top{display:grid;gap:12px;grid-template-columns:1fr;margin:14px 0}
-  @media (min-width:900px){ .top{grid-template-columns:1fr 1.4fr} }
+  .top{margin:14px 0 0;max-width:640px}
   .g3{display:grid;gap:8px;grid-template-columns:1fr 1fr 90px}
   .g2{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .muted{color:var(--muted);font-size:.88rem;line-height:1.5}
 
+  .tabs{display:flex;gap:6px;margin:16px 0 12px;flex-wrap:wrap}
+  .tabs button{border-radius:8px;min-height:42px;font-weight:600}
+  .tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .dot{color:#d1495b;margin-left:4px}
+
+  .meta{margin:0 0 12px}
   .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin:0 0 12px}
   .bar .grow{flex:1;min-width:220px;position:relative}
   .results{position:absolute;z-index:1200;left:0;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
@@ -51,7 +62,7 @@
 
   .app{display:grid;gap:16px;grid-template-columns:1fr}
   @media (min-width:1000px){ .app{grid-template-columns:minmax(0,1fr) 440px} }
-  #map{height:70vh;min-height:460px;border:2px solid #2e3e4c;border-radius:10px;z-index:0}
+  #map,#rmap{height:70vh;min-height:440px;border:2px solid #2e3e4c;border-radius:10px;z-index:0}
   #map.adding{cursor:crosshair}
   .hintbar{margin:8px 0 0;font-size:.88rem;color:var(--muted)}
   .side{display:grid;gap:12px;align-content:start}
@@ -65,16 +76,40 @@
   .pt-head button{min-height:32px;min-width:32px;padding:2px 8px}
   .del{color:var(--danger)}
   .field{margin-bottom:8px}
-  .muted{color:var(--muted);font-size:.88rem;line-height:1.5}
   .status{padding:10px 12px;border-radius:8px;font-size:.92rem;line-height:1.5;margin-top:10px}
   .status.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);border:1px solid var(--ok)}
   .status.err{background:color-mix(in srgb,var(--danger) 14%,transparent);color:var(--danger);border:1px solid var(--danger)}
-  .row{display:flex;gap:8px;flex-wrap:wrap}
+
+  ul.mates{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:6px;max-height:260px;overflow:auto}
+  ul.mates label{display:flex;align-items:center;gap:8px;margin:0;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:.95rem;font-weight:550;color:var(--ink);cursor:pointer}
+  ul.mates label.off{opacity:.5;cursor:not-allowed;background:var(--bg)}
+  ul.mates label.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}
+  .tag{margin-left:auto;font-size:.72rem;font-weight:700;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:1px 8px}
+
+  /* Feuille de route */
+  .rgrid{display:grid;gap:16px;grid-template-columns:1fr;margin-top:12px}
+  @media (min-width:1000px){ .rgrid{grid-template-columns:minmax(0,1fr) 460px} }
+  .rhead h2{font-size:1.3rem;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 4px}
+  ol.steps{list-style:none;margin:0;padding:0}
+  li.step{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--card)}
+  li.step .badge{width:32px;height:32px}
+  .step .time{font-weight:800;font-size:1.05rem}
+  .step .name{font-weight:650}
+  .step .sub{color:var(--muted);font-size:.86rem}
+  .step blockquote{margin:8px 0 0;padding:6px 10px;border-left:3px solid var(--accent);background:var(--bg);border-radius:0 6px 6px 0;font-size:.93rem;line-height:1.5}
+  li.walk{margin:6px 0 6px 16px;color:var(--muted);font-size:.86rem}
 
   .pin{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.45)}
   .pin span{transform:rotate(45deg);color:#fff;font-weight:800;font-size:13px}
   .pin.sel{box-shadow:0 0 0 3px #1f4e6b,0 2px 8px rgba(0,0,0,.5)}
   .leaflet-tooltip.lt{font-weight:600;font-size:12px}
+
+  @media print{
+    body{background:#fff;padding:0}
+    body.print-recu header,body.print-recu .top,body.print-recu .tabs,body.print-recu #viewMine,body.print-recu .noprint{display:none!important}
+    #rmap{height:340px;min-height:0}
+    li.step{break-inside:avoid}
+  }
 </style>
 </head>
 <body>
@@ -83,19 +118,31 @@
   <header>
     <p class="eyebrow">Atelier · itinéraire à Bruxelles</p>
     <h1>Votre journée idéale à Bruxelles</h1>
-    <p class="consigne">Imaginez que <b>vous accueillez un ami</b> pour une journée à Bruxelles. Quels sont <b>les lieux à voir absolument</b>, <b>dans quel ordre</b> et <b>à quelle heure</b> ? Café du matin, musée, balade, soirée… tout ce que vous jugez digne de votre itinéraire. Placez vos points sur la carte, commentez-les, puis envoyez-les à votre professeur.</p>
+    <p class="consigne">Imaginez que <b>vous accueillez un ami</b> pour une journée à Bruxelles. Quels sont <b>les lieux à voir absolument</b>, <b>dans quel ordre</b> et <b>à quelle heure</b> ? Café du matin, musée, balade, soirée… tout ce que vous jugez digne de votre itinéraire. Envoyez-le à votre professeur, puis à un camarade, et découvrez celui qu'un camarade a préparé pour vous.</p>
   </header>
 
-  <div class="top">
-    <section class="card">
-      <h2>1 · Vous</h2>
-      <div class="g3">
-        <div><label for="prenom">Prénom *</label><input id="prenom" maxlength="40" autocomplete="given-name"></div>
-        <div><label for="nom">Nom *</label><input id="nom" maxlength="40" autocomplete="family-name"></div>
-        <div><label for="classe">Classe *</label><input id="classe" maxlength="12" placeholder="ex. 6B"></div>
-      </div>
-    </section>
-    <section class="card">
+  <section class="card top" id="meCard">
+    <h2>1 · Vous</h2>
+    <div class="g3">
+      <div><label for="prenom">Prénom *</label><input id="prenom" maxlength="40" autocomplete="given-name"></div>
+      <div><label for="nom">Nom *</label><input id="nom" maxlength="40" autocomplete="family-name"></div>
+      <div><label for="classe">Classe *</label><input id="classe" maxlength="12" placeholder="ex. 6B"></div>
+    </div>
+    <div class="row" style="margin-top:10px" id="connRow">
+      <button id="connect" class="primary">Me connecter à la classe</button>
+      <button id="logout" hidden>Changer d'élève</button>
+      <span class="muted" id="connState"></span>
+    </div>
+  </section>
+
+  <div class="tabs" id="tabs" hidden role="tablist">
+    <button data-v="mine" aria-selected="true" role="tab">Mon itinéraire</button>
+    <button data-v="recu" aria-selected="false" role="tab">Itinéraire reçu<span class="dot" id="dot" hidden>●</span></button>
+  </div>
+
+  <!-- ===== Vue 1 : construire mon itinéraire ===== -->
+  <div id="viewMine">
+    <section class="card meta">
       <h2>2 · Votre itinéraire</h2>
       <div class="g2">
         <div><label for="titre">Titre de la journée</label><input id="titre" maxlength="80" placeholder="Ex. : Bruxelles côté café et art nouveau"></div>
@@ -103,40 +150,73 @@
       </div>
       <div class="field" style="margin-top:8px"><label for="intro">Un mot pour présenter cette journée</label><input id="intro" maxlength="200" placeholder="Ex. : Une journée tranquille, à faire à pied."></div>
     </section>
+
+    <div class="app">
+      <div>
+        <div class="bar">
+          <div class="grow">
+            <label for="q">3 · Chercher un lieu</label>
+            <input id="q" type="search" placeholder="Ex. : Atomium, Grand-Place, un café…" autocomplete="off">
+            <ul class="results" id="results" hidden></ul>
+          </div>
+          <button id="addBtn" class="primary" aria-pressed="false">Placer un point sur la carte</button>
+        </div>
+        <div id="map" aria-label="Carte de Bruxelles"></div>
+        <p class="hintbar" id="hint"></p>
+      </div>
+
+      <aside class="side">
+        <section class="card">
+          <h2>Mes points <span id="cnt"></span></h2>
+          <div id="list"></div>
+          <p class="muted" id="empty">Aucun point pour l'instant. Cherchez un lieu ou cliquez sur « Placer un point », puis sur la carte.</p>
+          <p class="muted" id="orderHint" hidden>Les points sont classés automatiquement par heure : changez l'heure pour changer l'ordre.</p>
+        </section>
+
+        <section class="card">
+          <h2>4 · Envoyer</h2>
+          <p class="muted" id="sendHelp"></p>
+          <div class="row">
+            <button id="send" class="primary">Envoyer au professeur</button>
+            <button id="dl">Télécharger ma copie</button>
+          </div>
+          <div id="mateBox" hidden>
+            <h3>Envoyer à un camarade</h3>
+            <p class="muted" id="mateHelp">Choisissez un camarade de votre classe. Un camarade déjà choisi par quelqu'un d'autre n'est plus disponible. L'envoi est définitif : vous ne pourrez plus modifier votre itinéraire.</p>
+            <ul class="mates" id="mates"></ul>
+            <div class="row">
+              <button id="refreshMates">Actualiser la liste</button>
+              <button id="sendMate" class="primary" disabled>Envoyer à un camarade</button>
+            </div>
+          </div>
+          <div id="sentBox" class="status ok" hidden></div>
+          <div id="status" class="status" hidden role="status"></div>
+        </section>
+      </aside>
+    </div>
   </div>
 
-  <div class="app">
-    <div>
-      <div class="bar">
-        <div class="grow">
-          <label for="q">3 · Chercher un lieu</label>
-          <input id="q" type="search" placeholder="Ex. : Atomium, Grand-Place, un café…" autocomplete="off">
-          <ul class="results" id="results" hidden></ul>
+  <!-- ===== Vue 2 : feuille de route reçue ===== -->
+  <div id="viewRecu" hidden>
+    <section class="card" id="recuEmpty">
+      <h2>Itinéraire reçu</h2>
+      <p class="muted">Personne ne vous a encore envoyé d'itinéraire. Cette page se met à jour toute seule : dès qu'un camarade vous choisit, sa feuille de route apparaît ici.</p>
+    </section>
+    <div id="recuBox" hidden>
+      <section class="card rhead">
+        <h2 id="rTitre"></h2>
+        <p class="muted" id="rMeta"></p>
+        <p id="rIntro" style="margin:6px 0 10px"></p>
+        <div class="row noprint">
+          <a class="btn" id="gmaps" target="_blank" rel="noopener noreferrer">Ouvrir dans Google Maps</a>
+          <button id="printBtn">Imprimer la feuille de route</button>
         </div>
-        <button id="addBtn" class="primary" aria-pressed="false">Placer un point sur la carte</button>
+      </section>
+      <div class="rgrid">
+        <div id="rmap" aria-label="Carte de l'itinéraire reçu"></div>
+        <ol class="steps" id="steps"></ol>
       </div>
-      <div id="map" aria-label="Carte de Bruxelles"></div>
-      <p class="hintbar" id="hint"></p>
     </div>
-
-    <aside class="side">
-      <section class="card">
-        <h2>Mes points <span id="cnt"></span></h2>
-        <div id="list"></div>
-        <p class="muted" id="empty">Aucun point pour l'instant. Cherchez un lieu ou cliquez sur « Placer un point », puis sur la carte.</p>
-        <p class="muted" id="orderHint" hidden>Les points sont classés automatiquement par heure : changez l'heure pour changer l'ordre.</p>
-      </section>
-
-      <section class="card">
-        <h2>4 · Envoyer</h2>
-        <p class="muted" id="sendHelp"></p>
-        <div class="row">
-          <button id="send" class="primary">Envoyer à mon professeur</button>
-          <button id="dl">Télécharger ma copie</button>
-        </div>
-        <div id="status" class="status" hidden role="status"></div>
-      </section>
-    </aside>
   </div>
 </div>
 
@@ -144,8 +224,8 @@
 <script>
 (() => {
   /* ============ À RÉGLER PAR L'ENSEIGNANT ============
-     ENDPOINT : adresse du script de collecte (voir collecte-google.gs).
-     Laissez vide pour que les élèves téléchargent un fichier à vous transmettre. */
+     ENDPOINT : adresse du serveur de classe (voir collecte-google.gs, URL se terminant par /exec).
+     Laissez vide pour un fonctionnement sans serveur : l'élève télécharge un fichier à vous transmettre. */
   const ENDPOINT = '';
   const MAX = 6;
 
@@ -162,12 +242,14 @@
     autre:  { n:'Autre',                      c:'#777777' },
   };
   const DURS = [15,30,45,60,75,90,120,150,180,240];
-  const KEY = 'itineraire-eleve-v1';
+  const KEY = 'itineraire-eleve-v2';
+  const POLL_MS = 7000;
   const $ = s => document.querySelector(s);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  let S = { prenom:'', nom:'', classe:'', titre:'', pour:'', intro:'', points:[] };
-  let selected = null, adding = false, uid = 0;
+  let S = { prenom:'', nom:'', classe:'', titre:'', pour:'', intro:'', points:[], me:null };
+  let sentTo = null, received = null, receivedSig = '', mates = [], chosenMate = null, view = 'mine';
+  let selected = null, adding = false, uid = 0, pollTimer = null;
   const markers = {}; let routeLine = null;
 
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} };
@@ -180,39 +262,65 @@
   }
 
   const toMin = t => { const m = /^(\d{1,2}):(\d{2})$/.exec(t || ''); return m ? +m[1] * 60 + +m[2] : null; };
-  const fmtT = m => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+  const fmtT = m => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(Math.round(m) % 60).padStart(2, '0')}`;
+  const fmtD = m => m >= 60 ? `${Math.floor(m / 60)} h${m % 60 ? ' ' + String(Math.round(m % 60)).padStart(2, '0') : ''}` : `${Math.round(m)} min`;
+  const fmtKm = k => k < 1 ? `${Math.round(k * 1000)} m` : `${k.toFixed(1).replace('.', ',')} km`;
+  const hav = (a, b) => {
+    const R = 6371, r = x => x * Math.PI / 180, dLa = r(b.lat - a.lat), dLn = r(b.lng - a.lng);
+    const h = Math.sin(dLa / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLn / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  };
   const moment = t => {
     const m = toMin(t); if (m === null) return 'Heure à choisir';
     const h = m / 60;
     return h >= 5 && h < 11 ? 'Matin' : h >= 11 && h < 14 ? 'Midi' : h >= 14 && h < 18 ? 'Après-midi' : h >= 18 && h < 22 ? 'Soirée' : 'Nuit';
   };
   const label = p => p.name || 'Point sans nom';
+  const catOf = c => CATS[c] || CATS.autre;
 
-  // ---------- carte ----------
-  const map = L.map('map', { minZoom: 11, maxBounds: [[50.70, 4.10], [51.02, 4.62]], maxBoundsViscosity: .8 }).setView([50.8467, 4.3525], 13);
-  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map);
-  L.control.scale({ metric: true, imperial: false }).addTo(map);
+  /* ---------- appels au serveur ---------- */
+  async function api(action, extra = {}) {
+    try {
+      const r = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action }, extra)) });
+      return await r.json();
+    } catch (_) { return { ok: false, error: 'Connexion impossible. Vérifiez votre réseau et réessayez.' }; }
+  }
+  async function apiGet(params) {
+    try { return await (await fetch(ENDPOINT + (ENDPOINT.includes('?') ? '&' : '?') + new URLSearchParams(params))).json(); }
+    catch (_) { return { ok: false, error: 'Connexion impossible.' }; }
+  }
 
+  /* ---------- carte « mon itinéraire » ---------- */
+  const mkMap = id => {
+    const m = L.map(id, { minZoom: 11, maxBounds: [[50.70, 4.10], [51.02, 4.62]], maxBoundsViscosity: .8 }).setView([50.8467, 4.3525], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(m);
+    L.control.scale({ metric: true, imperial: false }).addTo(m);
+    return m;
+  };
+  const map = mkMap('map');
+
+  const locked = () => !!sentTo;
   function setAdding(on) {
-    adding = on && S.points.length < MAX;
+    adding = on && S.points.length < MAX && !locked();
     $('#addBtn').setAttribute('aria-pressed', adding);
-    $('#addBtn').disabled = S.points.length >= MAX;
+    $('#addBtn').disabled = S.points.length >= MAX || locked();
     $('#map').classList.toggle('adding', adding);
-    $('#hint').textContent = adding ? 'Cliquez à l\'endroit voulu sur la carte.'
+    $('#hint').textContent = locked() ? 'Votre itinéraire est envoyé : il ne peut plus être modifié.'
+      : adding ? 'Cliquez à l\'endroit voulu sur la carte.'
       : S.points.length >= MAX ? `Vous avez placé ${MAX} points : supprimez-en un pour en ajouter un autre.`
       : 'Glissez un repère pour l\'ajuster. Maximum ' + MAX + ' points.';
   }
   $('#addBtn').addEventListener('click', () => setAdding(!adding));
-  map.on('click', e => { if (adding) { addPoint(e.latlng); } });
+  map.on('click', e => { if (adding) addPoint(e.latlng); });
 
   function nextTime() {
-    const ts = S.points.map(p => toMin(p.time)).filter(t => t !== null);
+    const ts = S.points.filter(p => toMin(p.time) !== null);
     if (!ts.length) return '10:00';
-    const last = S.points.slice().sort((a, b) => (toMin(a.time) ?? 0) - (toMin(b.time) ?? 0)).pop();
-    return fmtT(Math.min(23 * 60, (toMin(last.time) ?? 600) + (+last.dur || 60) + 30));
+    const last = ts.slice().sort((a, b) => toMin(a.time) - toMin(b.time)).pop();
+    return fmtT(Math.min(23 * 60, toMin(last.time) + (+last.dur || 60) + 30));
   }
   function addPoint(ll, pre = {}) {
-    if (S.points.length >= MAX) return;
+    if (S.points.length >= MAX || locked()) return;
     const p = { id: 'p' + (++uid), lat: ll.lat, lng: ll.lng, name: pre.name || '', cat: 'autre', time: nextTime(), dur: 60, comment: '' };
     S.points.push(p); selected = p.id; sortPoints(); save(); render(); setAdding(false);
   }
@@ -220,7 +328,7 @@
     S.points = S.points.map((p, i) => [p, i]).sort((a, b) => ((toMin(a[0].time) ?? 9999) - (toMin(b[0].time) ?? 9999)) || a[1] - b[1]).map(x => x[0]);
   }
 
-  // ---------- recherche (OpenStreetMap / Nominatim) ----------
+  /* ---------- recherche (OpenStreetMap / Nominatim) ---------- */
   let searchTimer;
   $('#q').addEventListener('input', e => {
     clearTimeout(searchTimer);
@@ -252,9 +360,9 @@
   });
   document.addEventListener('click', e => { if (!e.target.closest('.grow')) $('#results').hidden = true; });
 
-  // ---------- rendu ----------
+  /* ---------- rendu des points ---------- */
   const pinIcon = (i, cat, sel) => L.divIcon({ className: '', iconSize: [30, 30], iconAnchor: [15, 30], tooltipAnchor: [14, -18],
-    html: `<div class="pin${sel ? ' sel' : ''}" style="background:${CATS[cat].c}"><span>${i + 1}</span></div>` });
+    html: `<div class="pin${sel ? ' sel' : ''}" style="background:${catOf(cat).c}"><span>${i + 1}</span></div>` });
 
   function syncMarkers() {
     const ids = new Set(S.points.map(p => p.id));
@@ -270,11 +378,12 @@
       }
       m.setIcon(pinIcon(i, p.cat, p.id === selected));
       m.setTooltipContent(`${esc(p.time || '')} · ${esc(label(p))}`);
+      if (locked()) m.dragging.disable(); else m.dragging.enable();
     });
   }
   function drawRoute() {
     if (routeLine) { routeLine.remove(); routeLine = null; }
-    if (S.points.length > 1) routeLine = L.polyline(S.points.map(p => [p.lat, p.lng]), { color: '#1f4e6b', weight: 4, opacity: .85, dashArray: '9 7' }).addTo(map);
+    if (S.points.length > 1) routeLine = L.polyline(S.points.map(p => [p.lat, p.lng]), { color: '#1f4e6b', weight: 3, opacity: .85, dashArray: '9 7' }).addTo(map);
   }
   const syncCards = () => document.querySelectorAll('.pt').forEach(c => c.classList.toggle('sel', c.dataset.id === selected));
 
@@ -285,13 +394,13 @@
       d.className = 'pt' + (p.id === selected ? ' sel' : ''); d.id = 'pt-' + p.id; d.dataset.id = p.id;
       d.innerHTML = `
         <div class="pt-head">
-          <span class="badge" style="background:${CATS[p.cat].c}">${i + 1}</span>
-          <span class="pt-title">${esc(label(p))}<span class="moment" data-moment>${esc(moment(p.time))}</span></span>
+          <span class="badge" style="background:${catOf(p.cat).c}">${i + 1}</span>
+          <span class="pt-title">${esc(label(p))}<span class="moment">${esc(moment(p.time))}</span></span>
           <button data-act="del" class="del" aria-label="Supprimer ce point">×</button>
         </div>
         <div class="g2 field">
           <div><label>Heure *</label><input type="time" data-f="time" value="${esc(p.time)}"></div>
-          <div><label>Durée sur place</label><select data-f="dur">${DURS.map(v => `<option value="${v}" ${v === +p.dur ? 'selected' : ''}>${v >= 60 ? Math.floor(v / 60) + ' h' + (v % 60 ? ' ' + v % 60 : '') : v + ' min'}</option>`).join('')}</select></div>
+          <div><label>Durée sur place</label><select data-f="dur">${DURS.map(v => `<option value="${v}" ${v === +p.dur ? 'selected' : ''}>${fmtD(v)}</option>`).join('')}</select></div>
         </div>
         <div class="field"><label>Nom du lieu *</label><input data-f="name" maxlength="60" value="${esc(p.name)}" placeholder="Nom du lieu"></div>
         <div class="field"><label>Type de lieu</label><select data-f="cat">${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${k === p.cat ? 'selected' : ''}>${v.n}</option>`).join('')}</select></div>
@@ -301,22 +410,23 @@
     $('#empty').hidden = S.points.length > 0;
     $('#orderHint').hidden = S.points.length < 2;
     $('#cnt').textContent = `(${S.points.length}/${MAX})`;
+    applyLock();
     syncMarkers(); drawRoute(); setAdding(false);
     const p = S.points.find(q => q.id === selected); if (p) map.panTo([p.lat, p.lng]);
   }
 
   const listEl = $('#list');
   listEl.addEventListener('input', e => {
-    const f = e.target.dataset.f; if (!f || f === 'time') return;
+    const f = e.target.dataset.f; if (!f || f === 'time' || locked()) return;
     const p = S.points.find(q => q.id === e.target.closest('.pt').dataset.id);
     p[f] = f === 'dur' ? +e.target.value : e.target.value;
     const card = e.target.closest('.pt');
     if (f === 'name') card.querySelector('.pt-title').firstChild.textContent = label(p);
-    if (f === 'cat') card.querySelector('.badge').style.background = CATS[p.cat].c;
+    if (f === 'cat') card.querySelector('.badge').style.background = catOf(p.cat).c;
     save(); syncMarkers();
   });
   listEl.addEventListener('change', e => {
-    if (e.target.dataset.f !== 'time') return;
+    if (e.target.dataset.f !== 'time' || locked()) return;
     const p = S.points.find(q => q.id === e.target.closest('.pt').dataset.id);
     p.time = e.target.value; selected = p.id; sortPoints(); save(); render();
   });
@@ -324,7 +434,7 @@
     const card = e.target.closest('.pt'); if (!card) return;
     const id = card.dataset.id;
     if (e.target.closest('button')?.dataset.act === 'del') {
-      if (!confirm('Supprimer ce point ?')) return;
+      if (locked() || !confirm('Supprimer ce point ?')) return;
       S.points = S.points.filter(q => q.id !== id); if (selected === id) selected = null; save(); render(); return;
     }
     if (selected !== id) { selected = id; syncCards(); syncMarkers(); const p = S.points.find(q => q.id === id); map.panTo([p.lat, p.lng]); }
@@ -334,7 +444,22 @@
     $('#' + k).addEventListener('input', e => { S[k] = e.target.value; e.target.classList.remove('bad'); save(); });
   });
 
-  // ---------- envoi ----------
+  /* ---------- verrouillage après envoi à un camarade ---------- */
+  function applyLock() {
+    const l = locked();
+    document.querySelectorAll('#list input,#list select,#list textarea,#list button').forEach(el => el.disabled = l);
+    ['titre', 'pour', 'intro', 'q'].forEach(id => $('#' + id).disabled = l);
+    $('#send').disabled = l;
+    $('#sendMate').disabled = l || !chosenMate;
+    $('#mateBox').hidden = !S.me || !ENDPOINT || l;
+    const sb = $('#sentBox');
+    sb.hidden = !l;
+    if (l) sb.textContent = `Votre itinéraire a été envoyé à ${sentTo.prenom} ${sentTo.nom}. Il ne peut plus être modifié.`;
+    setAdding(false);
+    Object.values(markers).forEach(m => { if (l) m.dragging.disable(); else m.dragging.enable(); });
+  }
+
+  /* ---------- statut / validation / charge utile ---------- */
   const status = (msg, ok) => { const s = $('#status'); s.hidden = false; s.className = 'status ' + (ok ? 'ok' : 'err'); s.textContent = msg; };
   function validate() {
     const errs = [];
@@ -344,48 +469,212 @@
     if (S.points.some(p => toMin(p.time) === null)) errs.push('l\'heure de chaque point');
     return errs;
   }
-  function payload() {
+  function itinerary() {
     return {
-      version: 2, sentAt: new Date().toISOString(),
-      student: { prenom: S.prenom.trim(), nom: S.nom.trim(), classe: S.classe.trim() },
       titre: S.titre.trim(), pour: S.pour.trim(), intro: S.intro.trim(),
       points: S.points.map(({ lat, lng, name, cat, time, dur, comment }) => ({ lat, lng, name: name.trim(), cat, time, dur, comment: comment.trim() })),
     };
   }
   function download() {
-    const d = payload();
+    const d = Object.assign({ version: 2, sentAt: new Date().toISOString(), student: { prenom: S.prenom.trim(), nom: S.nom.trim(), classe: S.classe.trim() } }, itinerary());
     const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     const slug = s => s.replace(/[^\p{L}\p{N}_-]+/gu, '-');
     a.href = URL.createObjectURL(blob); a.download = `itineraire-${slug(d.student.classe)}-${slug(d.student.nom)}-${slug(d.student.prenom)}.json`;
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   }
+
+  /* ---------- connexion à la classe ---------- */
+  function setConnectedUI() {
+    const on = !!S.me;
+    ['prenom', 'nom', 'classe'].forEach(k => $('#' + k).disabled = on);
+    $('#connect').hidden = on || !ENDPOINT;
+    $('#logout').hidden = !on;
+    $('#tabs').hidden = !on;
+    $('#connState').textContent = !ENDPOINT ? 'Mode sans serveur : vous téléchargerez un fichier à remettre à votre professeur.'
+      : on ? `Connecté : ${S.me.prenom} ${S.me.nom} · ${S.me.classe}` : '';
+    $('#mateBox').hidden = !on || !ENDPOINT || locked();
+    $('#sendHelp').textContent = !ENDPOINT
+      ? 'L\'envoi en ligne n\'est pas activé sur cette page : le bouton télécharge un fichier à transmettre à votre professeur.'
+      : on ? 'Votre professeur reçoit votre itinéraire. Vous pouvez le renvoyer après correction : le dernier envoi remplace le précédent.'
+      : 'Connectez-vous à la classe (étape 1) pour envoyer votre itinéraire.';
+    $('#send').textContent = ENDPOINT ? 'Envoyer au professeur' : 'Télécharger pour le professeur';
+    $('#dl').hidden = !ENDPOINT;
+  }
+  async function connect() {
+    const errs = [];
+    ['prenom', 'nom', 'classe'].forEach(k => { const bad = !S[k].trim(); $('#' + k).classList.toggle('bad', bad); if (bad) errs.push(k); });
+    if (errs.length) { status('Renseignez votre prénom, votre nom et votre classe.', false); return; }
+    $('#connect').disabled = true;
+    const r = await api('join', { nom: S.nom, prenom: S.prenom, classe: S.classe });
+    $('#connect').disabled = false;
+    if (!r.ok) { status(r.error, false); return; }
+    S.me = r.me; sentTo = r.sentTo || null;
+    if (r.itin && !S.points.length) loadItin(r.itin);
+    save(); setConnectedUI(); startPolling(); render(); refreshMates();
+    status('Connecté à la classe. Votre nom apparaît dans la liste de votre professeur.', true);
+  }
+  function loadItin(it) {
+    S.titre = it.titre || ''; S.pour = it.pour || ''; S.intro = it.intro || '';
+    S.points = (it.points || []).slice(0, MAX).map(p => Object.assign({ id: 'p' + (++uid) }, p));
+    ['titre', 'pour', 'intro'].forEach(k => $('#' + k).value = S[k]);
+    sortPoints();
+    if (S.points.length > 1) map.fitBounds(L.latLngBounds(S.points.map(p => [p.lat, p.lng])), { padding: [60, 60] });
+  }
+  function logout() {
+    if (!confirm('Changer d\'élève ? Les points saisis sur cet appareil seront effacés.')) return;
+    stopPolling(); S = { prenom: '', nom: '', classe: '', titre: '', pour: '', intro: '', points: [], me: null };
+    sentTo = null; received = null; receivedSig = ''; mates = []; chosenMate = null; selected = null;
+    ['prenom', 'nom', 'classe', 'titre', 'pour', 'intro'].forEach(k => $('#' + k).value = '');
+    save(); setConnectedUI(); showView('mine'); render(); renderRoadmap(); renderMates(); $('#status').hidden = true;
+  }
+  $('#connect').addEventListener('click', connect);
+  $('#logout').addEventListener('click', logout);
+
+  /* ---------- envois ---------- */
+  async function submitToProf(quiet) {
+    const errs = validate();
+    if (errs.length) { status('Il manque : ' + errs.join(', ') + '.', false); return false; }
+    if (!ENDPOINT) { download(); status('Fichier téléchargé : transmettez-le à votre professeur.', true); return true; }
+    if (!S.me) { status('Connectez-vous d\'abord à la classe (étape 1).', false); return false; }
+    $('#send').disabled = true;
+    const r = await api('submit', { id: S.me.id, token: S.me.token, itin: itinerary() });
+    applyLock();
+    if (!r.ok) { status(r.error, false); return false; }
+    if (!quiet) status('Itinéraire envoyé à votre professeur.', true);
+    return true;
+  }
+  $('#send').addEventListener('click', () => submitToProf(false));
   $('#dl').addEventListener('click', () => {
     const errs = validate();
     if (errs.length) { status('Il manque : ' + errs.join(', ') + '.', false); return; }
     download(); status('Copie téléchargée. Conservez ce fichier.', true);
   });
-  $('#send').addEventListener('click', async () => {
-    const errs = validate();
-    if (errs.length) { status('Il manque : ' + errs.join(', ') + '.', false); return; }
-    if (!ENDPOINT) { download(); status('L\'envoi en ligne n\'est pas activé : votre fichier a été téléchargé. Transmettez-le à votre professeur.', true); return; }
-    $('#send').disabled = true;
-    try {
-      await fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload()) });
-      status('Itinéraire envoyé à votre professeur. Vous pouvez le modifier et le renvoyer : le dernier envoi remplace le précédent.', true);
-    } catch (_) {
-      download(); status('L\'envoi a échoué (connexion ?). Une copie a été téléchargée : transmettez-la à votre professeur.', false);
-    } finally { $('#send').disabled = false; }
-  });
-  $('#sendHelp').textContent = ENDPOINT
-    ? 'Vérifiez le prénom, le nom et la classe, puis envoyez. Vous pourrez renvoyer une version corrigée.'
-    : 'L\'envoi en ligne n\'est pas activé sur cette page : le bouton télécharge un fichier à transmettre à votre professeur.';
 
-  // ---------- démarrage ----------
+  /* ---------- envoi à un camarade ---------- */
+  async function refreshMates() {
+    if (!S.me || !ENDPOINT) return;
+    const r = await apiGet({ action: 'list', classe: S.me.classe });
+    if (!r.ok) return;
+    mates = r.students.filter(s => s.id !== S.me.id).sort((a, b) => (a.nom + a.prenom).localeCompare(b.nom + b.prenom, 'fr'));
+    if (chosenMate && !mates.some(m => m.id === chosenMate && !m.taken)) chosenMate = null;
+    renderMates();
+  }
+  function renderMates() {
+    const ul = $('#mates'); ul.innerHTML = '';
+    if (!mates.length) ul.innerHTML = '<li class="muted">Aucun autre élève connecté dans votre classe pour l\'instant.</li>';
+    mates.forEach(m => {
+      const li = document.createElement('li');
+      const off = m.taken;
+      li.innerHTML = `<label class="${off ? 'off' : ''}${chosenMate === m.id ? ' on' : ''}"><input type="radio" name="mate" value="${esc(m.id)}" ${off ? 'disabled' : ''} ${chosenMate === m.id ? 'checked' : ''}> ${esc(m.prenom)} ${esc(m.nom)}${off ? '<span class="tag">déjà choisi</span>' : ''}</label>`;
+      li.querySelector('input').addEventListener('change', () => { chosenMate = m.id; renderMates(); });
+      ul.appendChild(li);
+    });
+    const m = mates.find(x => x.id === chosenMate);
+    $('#sendMate').textContent = m ? `Envoyer à ${m.prenom} ${m.nom}` : 'Envoyer à un camarade';
+    $('#sendMate').disabled = !m || locked();
+  }
+  $('#refreshMates').addEventListener('click', refreshMates);
+  $('#sendMate').addEventListener('click', async () => {
+    const m = mates.find(x => x.id === chosenMate); if (!m) return;
+    if (!confirm(`Envoyer votre itinéraire à ${m.prenom} ${m.nom} ?\nL'envoi est définitif : vous ne pourrez plus le modifier.`)) return;
+    $('#sendMate').disabled = true;
+    if (!(await submitToProf(true))) { renderMates(); return; }
+    const r = await api('send', { id: S.me.id, token: S.me.token, toId: m.id });
+    if (!r.ok) { status(r.error, false); chosenMate = null; await refreshMates(); return; }
+    sentTo = r.sentTo; chosenMate = null; $('#status').hidden = true;
+    applyLock(); render(); refreshMates();
+  });
+
+  /* ---------- relève : itinéraire reçu, état d'envoi ---------- */
+  async function poll() {
+    if (!S.me || !ENDPOINT) return;
+    const r = await api('inbox', { id: S.me.id, token: S.me.token });
+    if (!r.ok) {
+      if (/Session invalide/.test(r.error || '')) { stopPolling(); S.me = null; save(); setConnectedUI(); status('Votre session a expiré : reconnectez-vous.', false); }
+      return;
+    }
+    const wasLocked = locked();
+    sentTo = r.sentTo || null;
+    if (wasLocked !== locked()) { applyLock(); render(); }
+    const sig = JSON.stringify(r.received || null);
+    if (sig !== receivedSig) {
+      const first = !received && !!r.received;
+      received = r.received; receivedSig = sig; renderRoadmap();
+      if (first && view !== 'recu') $('#dot').hidden = false;
+    }
+    if (view === 'mine' && !locked()) refreshMates();
+  }
+  function startPolling() { stopPolling(); poll(); pollTimer = setInterval(poll, POLL_MS); }
+  function stopPolling() { if (pollTimer) clearInterval(pollTimer); pollTimer = null; }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
+
+  /* ---------- onglets ---------- */
+  function showView(v) {
+    view = v;
+    $('#viewMine').hidden = v !== 'mine'; $('#viewRecu').hidden = v !== 'recu';
+    document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.v === v));
+    if (v === 'recu') { $('#dot').hidden = true; setTimeout(() => { if (rmap) { rmap.invalidateSize(); fitRoadmap(); } }, 50); }
+    else setTimeout(() => map.invalidateSize(), 50);
+  }
+  document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => showView(b.dataset.v)));
+
+  /* ---------- feuille de route ---------- */
+  let rmap = null, rLayer = null;
+  function fitRoadmap() {
+    if (!received || !rmap) return;
+    const pts = received.itin.points.map(p => [p.lat, p.lng]);
+    if (pts.length) rmap.fitBounds(L.latLngBounds(pts), { padding: [50, 50], maxZoom: 16 });
+  }
+  function renderRoadmap() {
+    const empty = $('#recuEmpty'), box = $('#recuBox');
+    if (!received) { empty.hidden = false; box.hidden = true; return; }
+    empty.hidden = true; box.hidden = false;
+    const it = received.itin, from = received.from, pts = it.points;
+    $('#rTitre').textContent = it.titre || 'Votre journée à Bruxelles';
+    $('#rMeta').textContent = `Itinéraire préparé pour vous par ${from.prenom} ${from.nom}` + (it.pour ? ` · « ${it.pour} »` : '');
+    $('#rIntro').textContent = it.intro || '';
+    // étapes
+    const ol = $('#steps'); ol.innerHTML = '';
+    pts.forEach((p, i) => {
+      const li = document.createElement('li'); li.className = 'step';
+      const c = catOf(p.cat);
+      li.innerHTML = `<span class="badge" style="background:${c.c}">${i + 1}</span>
+        <div><div class="time">${esc(p.time || '—')}${p.dur ? ` <span class="sub">· sur place ${fmtD(p.dur)}</span>` : ''}</div>
+        <div class="name">${esc(p.name || 'Point sans nom')}</div><div class="sub">${esc(moment(p.time))} · ${esc(c.n)}</div>
+        ${p.comment ? `<blockquote>${esc(p.comment)}</blockquote>` : ''}</div>`;
+      ol.appendChild(li);
+      if (i < pts.length - 1) {
+        const km = hav(p, pts[i + 1]) * 1.3, w = document.createElement('li'); w.className = 'walk';
+        w.textContent = `↓ À pied environ ${fmtD(km / 4.8 * 60)} (${fmtKm(km)})`; ol.appendChild(w);
+      }
+    });
+    const last = pts[pts.length - 1], lm = toMin(last.time);
+    if (lm !== null) { const e = document.createElement('li'); e.className = 'walk'; e.textContent = `Fin de la journée vers ${fmtT(lm + (last.dur || 0))}.`; ol.appendChild(e); }
+    // lien Google Maps (itinéraire à pied)
+    const q = p => `${p.lat.toFixed(6)},${p.lng.toFixed(6)}`;
+    const g = new URL('https://www.google.com/maps/dir/');
+    g.searchParams.set('api', '1'); g.searchParams.set('travelmode', 'walking');
+    g.searchParams.set('origin', q(pts[0])); g.searchParams.set('destination', q(pts[pts.length - 1]));
+    if (pts.length > 2) g.searchParams.set('waypoints', pts.slice(1, -1).map(q).join('|'));
+    $('#gmaps').href = g.toString();
+    // carte
+    if (!rmap) rmap = mkMap('rmap');
+    if (rLayer) rLayer.remove();
+    rLayer = L.layerGroup().addTo(rmap);
+    if (pts.length > 1) L.polyline(pts.map(p => [p.lat, p.lng]), { color: '#1f4e6b', weight: 3, opacity: .9 }).addTo(rLayer);
+    pts.forEach((p, i) => L.marker([p.lat, p.lng], { icon: pinIcon(i, p.cat, false) }).bindTooltip(`${esc(p.time || '')} · ${esc(p.name)}`, { className: 'lt' }).addTo(rLayer));
+    if (view === 'recu') { rmap.invalidateSize(); fitRoadmap(); }
+  }
+  $('#printBtn').addEventListener('click', () => { document.body.classList.add('print-recu'); setTimeout(() => { window.print(); document.body.classList.remove('print-recu'); }, 100); });
+
+  /* ---------- démarrage ---------- */
   load();
   ['prenom', 'nom', 'classe', 'titre', 'pour', 'intro'].forEach(k => $('#' + k).value = S[k] || '');
-  sortPoints(); render();
+  if (!ENDPOINT) S.me = null;
+  sortPoints(); setConnectedUI(); render();
   if (S.points.length > 1) map.fitBounds(L.latLngBounds(S.points.map(p => [p.lat, p.lng])), { padding: [60, 60] });
+  if (S.me) { startPolling(); refreshMates(); }
 })();
 </script>
 </body>
