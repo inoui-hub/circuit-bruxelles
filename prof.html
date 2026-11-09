@@ -8,205 +8,166 @@
 <style>
   :root{
     --ink:#1f2933; --bg:#e9ecef; --card:#fff; --muted:#5f6b76; --accent:#1f4e6b; --accent-ink:#fff;
-    --border:#cfd5db; --danger:#b3261e;
+    --border:#cfd5db; --danger:#b3261e; --ok:#1d6b3a; --green:#1fa34a;
   }
   @media (prefers-color-scheme: dark){
-    :root{ --ink:#e8eaed; --bg:#14171a; --card:#1d2125; --muted:#9aa5b1; --border:#343b42; --accent:#8bb8d4; --accent-ink:#0e1215; --danger:#f2a29d; }
+    :root{ --ink:#e8eaed; --bg:#14171a; --card:#1d2125; --muted:#9aa5b1; --border:#343b42; --accent:#8bb8d4; --accent-ink:#0e1215; --danger:#f2a29d; --ok:#8fd4a5; --green:#3ddc6e; }
   }
   *{box-sizing:border-box}
   html,body{margin:0}
   body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);padding:0 20px 48px}
-  .wrap{max-width:1400px;margin:0 auto}
-  header{padding:22px 0 12px;max-width:920px}
+  .wrap{max-width:1500px;margin:0 auto}
+  header{padding:22px 0 12px;max-width:940px}
   .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 6px}
   h1{margin:0 0 6px;font-size:clamp(1.5rem,3.4vw,2.2rem);letter-spacing:-.01em}
   .consigne{margin:0;color:var(--muted);line-height:1.55}
-  .consigne b{color:var(--ink);font-weight:650}
 
   button,select,input,textarea{font:inherit;color:var(--ink)}
-  button{
-    font-size:.9rem;font-weight:550;cursor:pointer;border:1px solid var(--border);background:var(--card);
-    border-radius:8px;padding:8px 13px;min-height:40px;
-  }
-  button:hover{border-color:var(--accent)}
+  button{font-size:.9rem;font-weight:550;cursor:pointer;border:1px solid var(--border);background:var(--card);border-radius:8px;padding:8px 13px;min-height:40px}
+  button:hover:not(:disabled){border-color:var(--accent)}
   button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
-  button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  button.small{min-height:30px;padding:3px 10px;font-size:.82rem}
+  button.danger{color:var(--danger)}
   button:disabled{opacity:.5;cursor:not-allowed}
-  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  a.btn{display:inline-flex;align-items:center;text-decoration:none;font-size:.9rem;font-weight:550;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:8px 13px;min-height:40px}
+  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
   input,select,textarea{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;width:100%;min-height:40px}
-  textarea{min-height:70px;resize:vertical}
-  label{display:block;font-size:.76rem;font-weight:650;color:var(--muted);margin:0 0 3px;letter-spacing:.02em}
+  input[type=checkbox]{width:auto;min-height:0}
+  label{display:block;font-size:.76rem;font-weight:650;color:var(--muted);margin:0 0 3px}
   [hidden]{display:none!important}
+  .muted{color:var(--muted);font-size:.88rem;line-height:1.5}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .card h2{margin:0 0 10px;font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+  .status{padding:10px 12px;border-radius:8px;font-size:.92rem;line-height:1.5;margin-top:10px}
+  .status.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);border:1px solid var(--ok)}
+  .status.err{background:color-mix(in srgb,var(--danger) 14%,transparent);color:var(--danger);border:1px solid var(--danger)}
 
-  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin:14px 0 12px}
-  .bar .grow{flex:1;min-width:220px;position:relative}
-  .bar .small{width:130px}
-  .results{
-    position:absolute;z-index:1200;left:0;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;
-    background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);
-  }
-  .results li{padding:8px 10px;border-radius:6px;cursor:pointer;font-size:.9rem}
-  .results li:hover{background:var(--bg)}
+  .top{display:grid;gap:14px;grid-template-columns:1fr;margin:8px 0 14px}
+  @media (min-width:1000px){ .top{grid-template-columns:1fr 1fr 320px;align-items:start} }
+  .g2{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;padding:0;list-style:none}
+  .chips li{display:flex;align-items:center;gap:4px;padding:2px 4px 2px 12px;border-radius:999px;background:var(--bg);border:1px solid var(--border);font-weight:650}
+  .chips li button{min-height:26px;padding:0 8px;border:0;background:transparent;color:var(--danger);font-size:1rem}
+
+  ul.who{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:230px;overflow:auto}
+  ul.who li{display:flex;align-items:center;gap:8px;font-size:.92rem;padding:3px 2px}
+  ul.who li.off{color:var(--muted)}
+  ul.who .cl{margin-left:auto;font-size:.74rem;color:var(--muted)}
+  ul.who button{min-height:22px;padding:0 7px;line-height:1}
+  .led{flex:none;width:11px;height:11px;border-radius:50%;background:#b8c0c8}
+  li:not(.off) > .led{background:var(--green);box-shadow:0 0 0 3px color-mix(in srgb,var(--green) 28%,transparent)}
 
   .app{display:grid;gap:16px;grid-template-columns:1fr}
-  @media (min-width:1000px){ .app{grid-template-columns:minmax(0,1fr) 420px} }
-  #map{height:72vh;min-height:480px;border:2px solid #2e3e4c;border-radius:10px;z-index:0}
-  #map.adding{cursor:crosshair}
-  .hintbar{margin:8px 0 0;font-size:.88rem;color:var(--muted)}
-
+  @media (min-width:1100px){ .app{grid-template-columns:minmax(0,1fr) 520px} }
+  #map{height:74vh;min-height:480px;border:2px solid #2e3e4c;border-radius:10px;z-index:0}
   .side{display:grid;gap:12px;align-content:start}
-  @media (min-width:1000px){ .side{max-height:calc(72vh + 40px);overflow:auto;padding-right:4px} }
-  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
-  .card h2{margin:0 0 8px;font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  @media (min-width:1100px){ .side{max-height:calc(74vh + 10px);overflow:auto;padding-right:4px} }
 
-  .pt{border:1px solid var(--border);border-radius:10px;padding:10px;margin:0 0 10px;background:var(--card)}
-  .pt.sel{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}
-  .pt-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-  .badge{
-    flex:none;width:28px;height:28px;border-radius:50%;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;
-    font-size:.9rem;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)
-  }
-  .pt-title{flex:1;min-width:0;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .pt-time{font-size:.78rem;color:var(--muted);font-weight:500;display:block}
-  .pt-head button{min-height:32px;min-width:32px;padding:2px 8px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-  .del{color:var(--danger)}
+  ul.reqs{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  ul.reqs li{border:1px solid var(--border);border-radius:10px;padding:9px 10px;display:grid;gap:5px}
+  ul.reqs li.sel{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}
+  .q{font-weight:700}
+  .q::before{content:"⌕ ";color:var(--muted)}
+  .meta{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:.82rem;color:var(--muted)}
+  .sw{display:inline-block;width:20px;height:4px;border-radius:2px;vertical-align:middle}
+  .tag{font-size:.72rem;font-weight:700;border:1px solid var(--border);border-radius:999px;padding:1px 9px}
+  .tag.free{color:var(--ok);border-color:var(--ok)}
+  .score{font-weight:800}
+  .acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .acts label{margin:0;display:flex;gap:4px;align-items:center;font-size:.8rem}
 
-  .stat{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:0 0 10px}
+  .stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px}
   .stat div{background:var(--bg);border-radius:8px;padding:8px 10px}
   .stat b{display:block;font-size:1.15rem}
   .stat span{font-size:.74rem;color:var(--muted)}
-  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px;padding:0;list-style:none}
-  .chips li{display:flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--border);font-size:.82rem;font-weight:550}
-  .chips i{width:10px;height:10px;border-radius:50%;display:inline-block}
-  ol.sched{margin:0;padding:0;list-style:none;font-size:.9rem;line-height:1.5}
-  ol.sched li{padding:6px 0;border-bottom:1px dashed var(--border)}
-  ol.sched li.walk{color:var(--muted);font-size:.82rem;padding:2px 0 2px 14px;border:0}
-  .muted{color:var(--muted);font-size:.88rem;line-height:1.5}
-  .row{display:flex;gap:8px;flex-wrap:wrap}
-  .legend{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
-  .legend li{display:flex;align-items:center;gap:8px;font-size:.9rem}
-  .legend i{width:22px;height:4px;border-radius:2px;flex:none}
-  .legend button{min-height:28px;padding:0 8px;margin-left:auto}
-  .questions{margin:0;padding-left:1.2em;line-height:1.6;font-size:.92rem}
-  .questions li{margin-bottom:3px}
+  .bars{display:grid;gap:8px;margin:0 0 10px}
+  .bars .b{display:grid;grid-template-columns:1fr 44px;gap:8px;align-items:center;font-size:.88rem}
+  .bars .t{grid-column:1/-1;font-weight:600}
+  .bars .track{height:10px;border-radius:5px;background:var(--bg);overflow:hidden}
+  .bars .track i{display:block;height:100%;background:var(--accent)}
+  .list{margin:0 0 10px;padding-left:1.1em;line-height:1.6;font-size:.9rem}
+  ol.det{margin:0;padding:0;list-style:none;font-size:.9rem}
+  ol.det li{padding:5px 0;border-bottom:1px dashed var(--border)}
+  blockquote{margin:4px 0 0;padding:4px 10px;border-left:3px solid var(--accent);background:var(--bg);font-size:.88rem}
 
-  /* Marqueurs Leaflet */
-  .pin{
-    width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;
-    border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.45)
-  }
-  .pin span{transform:rotate(45deg);color:#fff;font-weight:800;font-size:13px}
-  .pin.sel{outline:3px solid #fff;box-shadow:0 0 0 3px #1f4e6b,0 2px 8px rgba(0,0,0,.5)}
-  .mini{width:16px;height:16px;border-radius:50%;border:2px solid #fff;color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+  .mini{width:20px;height:20px;border-radius:50%;border:2px solid #fff;color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.45)}
   .leaflet-tooltip.lt{font-weight:600;font-size:12px}
-  .poi-btn{margin-top:6px;min-height:30px;padding:2px 10px}
-
-  @media print{
-    body{background:#fff;padding:0}
-    .bar,.consigne,.eyebrow,#addForm,.noprint,.hintbar,.leaflet-control-container{display:none!important}
-    .app{grid-template-columns:1fr}
-    #map{height:380px;min-height:0}
-    .side{max-height:none;overflow:visible}
-    .card,.pt{break-inside:avoid}
-  }
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">Espace enseignant · synthèse</p>
-    <h1>Tableau de bord · circuits à Bruxelles</h1>
-    <p class="consigne">Récupérez les itinéraires envoyés par les élèves et <b>superposez-les sur une même carte</b>, une couleur par élève. Filtrez par classe, repérez les lieux cités par plusieurs élèves. Vous pouvez aussi construire votre propre circuit de référence.</p>
+    <p class="eyebrow">Espace enseignant</p>
+    <h1>Tableau de bord · itinéraires sur demande</h1>
+    <p class="consigne">Choisissez les classes qui participent, voyez qui est en ligne, suivez les demandes et superposez sur une même carte les itinéraires en construction (une couleur par élève). Ouvrez l'écran de projection pour la classe.</p>
   </header>
 
-  <div class="bar" id="addForm">
-    <div>
-      <label for="student">Prénom</label>
-      <input id="student" class="small" maxlength="30" placeholder="Votre prénom">
-    </div>
-    <div>
-      <label for="start">Début du circuit</label>
-      <input id="start" type="time" value="10:00" class="small">
-    </div>
-    <div class="grow">
-      <label for="q">Rechercher un lieu à Bruxelles</label>
-      <input id="q" type="search" placeholder="Ex. : Atomium, Grand-Place, Parc du Cinquantenaire…" autocomplete="off">
-      <ul class="results" id="results" hidden></ul>
-    </div>
-    <button id="addBtn" class="primary" aria-pressed="false">Placer un point sur la carte</button>
-    <button id="poiBtn" aria-pressed="false">Repères connus</button>
+  <div class="top">
+    <section class="card">
+      <h2>Serveur</h2>
+      <div style="margin-bottom:8px"><label for="url">Adresse du serveur (URL se terminant par /exec)</label><input id="url" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off"></div>
+      <div style="margin-bottom:8px"><label for="key">Clé enseignant</label><input id="key" type="password" autocomplete="off"></div>
+      <div class="row">
+        <button id="saveCfg" class="primary">Enregistrer et se connecter</button>
+        <span class="muted" id="conn"></span>
+      </div>
+      <p class="muted" style="margin:8px 0 0">Mémorisé sur cet appareil uniquement.</p>
+      <div id="cfgStatus" class="status err" hidden role="status"></div>
+    </section>
+
+    <section class="card">
+      <h2>Classes ouvertes aux élèves</h2>
+      <p class="muted" style="margin:0 0 8px">Les élèves cochent leur classe parmi cette liste.</p>
+      <ul class="chips" id="clsChips"></ul>
+      <form class="row" id="clsForm" autocomplete="off" style="flex-wrap:nowrap">
+        <input id="clsNew" maxlength="20" placeholder="Ex. : 6B" aria-label="Nom de la classe">
+        <button type="submit">Ajouter</button>
+      </form>
+      <div class="row" style="margin-top:8px"><button id="clsSave" class="primary" disabled>Publier la liste</button><span class="muted" id="clsState"></span></div>
+    </section>
+
+    <section class="card">
+      <h2><span>En ligne</span><span id="onCnt"></span></h2>
+      <ul class="who" id="who"></ul>
+      <p class="muted" id="whoEmpty">Personne n'est connecté.</p>
+    </section>
   </div>
 
-  <div class="app">
+  <div class="row" style="margin-bottom:12px">
+    <div style="min-width:180px"><label for="classFilter">Classe affichée</label><select id="classFilter"><option value="">Toutes les classes</option></select></div>
+    <button id="refresh">Actualiser</button>
+    <label style="display:flex;align-items:center;gap:6px;margin:18px 0 0;color:var(--ink);font-size:.88rem"><input type="checkbox" id="auto" checked> Actualiser automatiquement</label>
+    <button id="liveBtn" class="primary" style="margin-top:18px">Écran de projection</button>
+    <button id="liveCopy" style="margin-top:18px">Copier le lien de projection</button>
+    <button id="purge" class="danger" style="margin-top:18px">Vider élèves et demandes</button>
+  </div>
+  <div id="status" class="status" hidden role="status"></div>
+
+  <div class="app" style="margin-top:12px">
     <div>
       <div id="map" aria-label="Carte de Bruxelles"></div>
-      <p class="hintbar" id="hint">Cliquez sur « Placer un point », puis sur la carte. Glissez un repère pour l'ajuster.</p>
+      <p class="muted" id="mapHint">Les itinéraires apparaissent ici dès que les élèves placent leurs points.</p>
     </div>
-
     <aside class="side">
       <section class="card">
-        <h2>Mes points <span id="cnt"></span></h2>
-        <div id="list"></div>
-        <p class="muted" id="empty">Aucun point pour l'instant. Placez votre premier lieu à voir.</p>
+        <h2><span>Demandes et itinéraires</span><span id="reqCnt"></span></h2>
+        <ul class="reqs" id="reqs"></ul>
+        <p class="muted" id="reqsEmpty">Aucune demande pour l'instant.</p>
+        <div class="row" style="margin-top:8px"><button class="small" id="allOn">Tout afficher</button><button class="small" id="allOff">Tout masquer</button></div>
       </section>
-
-      <section class="card" id="sumCard" hidden>
-        <h2>Mon circuit</h2>
+      <section class="card" id="detCard" hidden>
+        <h2><span id="detTitle">Détail</span><button class="small" id="detClose">Fermer</button></h2>
+        <div id="det"></div>
+      </section>
+      <section class="card">
+        <h2>Synthèse</h2>
         <div class="stat" id="stat"></div>
-        <ul class="chips" id="cats"></ul>
-        <ol class="sched" id="sched"></ol>
-        <p class="muted" style="margin-top:8px">Distances estimées à vol d'oiseau ×1,3, à pied (4,8 km/h).</p>
-      </section>
-
-      <section class="card noprint" id="studCard">
-        <h2>Élèves de la classe <span id="scnt"></span></h2>
-        <div class="row">
-          <button id="fetchBtn" class="primary">Récupérer les envois</button>
-          <button id="cfgBtn">Paramètres de collecte</button>
-        </div>
-        <label style="display:flex;gap:8px;align-items:center;margin:10px 0 0;font-size:.88rem;color:var(--muted)"><input type="checkbox" id="auto" style="width:auto;min-height:0"> Actualiser automatiquement toutes les 15 s</label>
-        <p class="muted" id="stats" style="margin:8px 0 0"></p>
-        <p class="muted" style="margin:10px 0 4px">Ou importez des fichiers (.json) transmis par les élèves :</p>
-        <input type="file" id="import" accept=".json,application/json" multiple>
-        <div class="row" style="margin-top:10px">
-          <select id="classFilter" style="flex:1;min-width:140px" aria-label="Filtrer par classe"><option value="">Toutes les classes</option></select>
-          <button id="allOn">Tout afficher</button>
-          <button id="allOff">Tout masquer</button>
-        </div>
-        <ul class="legend" id="legend"></ul>
-        <p class="muted" id="noStud">Aucun élève connecté pour l'instant.</p>
-        <div id="detail"></div>
-      </section>
-
-      <section class="card noprint" id="synthCard" hidden>
-        <h2>Synthèse des circuits affichés</h2>
-        <p class="muted" style="margin-bottom:6px">Lieux cités par plusieurs élèves (points à moins de 150 m) :</p>
-        <ol class="sched" id="synth"></ol>
-        <p class="muted" style="margin:10px 0 4px">Types de lieux :</p>
-        <ul class="chips" id="synthCats"></ul>
-        <p class="muted" style="margin:4px 0">Moments de la journée :</p>
-        <ul class="chips" id="synthMoments"></ul>
-      </section>
-
-      <section class="card noprint">
-        <h2>Mon propre circuit</h2>
-        <div class="row">
-          <button id="export">Exporter</button>
-          <button id="print">Imprimer la fiche</button>
-          <button id="clear" class="del">Tout effacer</button>
-        </div>
-      </section>
-
-      <section class="card noprint">
-        <h2>Pistes de réflexion</h2>
-        <ol class="questions">
-          <li>Quel critère a guidé l'ordre : proximité, thème, énergie, horaires ?</li>
-          <li>Votre circuit est-il réalisable en une journée ? Que sacrifier ?</li>
-          <li>Qu'est-ce que votre sélection dit de votre idée de Bruxelles ?</li>
-          <li>Comparez avec un autre circuit : quels lieux reviennent, lesquels divergent ?</li>
-        </ol>
+        <h3 style="margin:0 0 6px;font-size:.95rem">Évaluations (moyenne /5)</h3>
+        <div class="bars" id="evBars"></div>
+        <h3 style="margin:0 0 6px;font-size:.95rem">Lieux cités par au moins 2 élèves</h3>
+        <ul class="list" id="synth"></ul>
       </section>
     </aside>
   </div>
@@ -215,473 +176,202 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 (() => {
-  const MAX = 6;
-  const CATS = {
-    patri:  { n:'Patrimoine & histoire',     c:'#8c5a3c' },
-    musee:  { n:'Musées & culture',           c:'#5d4f9a' },
-    archi:  { n:'Architecture & art nouveau', c:'#b07a2a' },
-    cafe:   { n:'Café & pause',               c:'#a0522d' },
-    gastro: { n:'Gastronomie',                c:'#c2562f' },
-    nature: { n:'Parcs & nature',             c:'#4f8a4f' },
-    shop:   { n:'Shopping & marchés',         c:'#b34a7d' },
-    nuit:   { n:'Vie nocturne & sorties',     c:'#2f4b7c' },
-    trans:  { n:'Transport & étape',          c:'#4a5560' },
-    autre:  { n:'Autre',                      c:'#777777' },
-  };
-  const PRIOS = { 1:'Indispensable', 2:'Souhaitable', 3:'Si le temps le permet' };
-  const DURS = [15,30,45,60,75,90,120,150,180];
-  const LANDMARKS = [
-    ['Grand-Place',50.8467,4.3525,'patri'],['Manneken-Pis',50.8450,4.3499,'patri'],['Atomium',50.8949,4.3415,'archi'],
-    ['Mini-Europe',50.8947,4.3406,'musee'],['Mont des Arts',50.8438,4.3562,'patri'],['Place du Sablon',50.8404,4.3558,'shop'],
-    ['Cathédrale Saints-Michel-et-Gudule',50.8476,4.3601,'patri'],['Parc de Bruxelles',50.8456,4.3626,'nature'],
-    ['Palais de Justice',50.8368,4.3472,'patri'],['Parc du Cinquantenaire',50.8403,4.3935,'nature'],['Basilique de Koekelberg',50.8645,4.3231,'patri'],
-    ['Musées royaux des Beaux-Arts',50.8423,4.3585,'musee'],['Musée Horta',50.8228,4.3597,'archi'],['Halles Saint-Géry',50.8486,4.3470,'nuit'],
-    ['Étangs d\'Ixelles',50.8236,4.3722,'nature'],['Place Flagey',50.8274,4.3721,'nuit'],['Gare Centrale',50.8453,4.3568,'trans'],
-    ['Parlement européen',50.8391,4.3745,'patri'],['Galeries Royales Saint-Hubert',50.8483,4.3548,'shop'],['Marolles — Place du Jeu de Balle',50.8368,4.3465,'shop'],
-  ];
-  const STUDENT_COLORS = ['#d1495b','#2e86ab','#edae49','#00798c','#8d6a9f','#66a182','#e07a5f','#3d405b','#c0392b','#16a085','#b8860b','#6c5ce7'];
-  const KEY = 'circuit-bruxelles-v1';
-
+  const CKEY = 'circuit-bruxelles-collecte-v1';
+  const COLORS = ['#e6194b','#3cb44b','#4363d8','#f58231','#911eb4','#008080','#9a6324','#f032e6','#808000','#000075','#e6a800','#00a3a3','#800000','#6b8e23','#ff6f91','#555555'];
+  const CRITS = [['c1', 'Demande bien comprise'], ['c2', 'Restitue ce que je désire'], ['c3', 'Ordonné selon mes besoins']];
   const $ = s => document.querySelector(s);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const num = (v, d) => Number.isFinite(+v) ? +v : d;
+  const hav = (a, b) => { const R = 6371, r = x => x * Math.PI / 180, dLa = r(b.lat - a.lat), dLn = r(b.lng - a.lng); const h = Math.sin(dLa / 2) ** 2 + Math.cos(r(a.lat)) * Math.cos(r(b.lat)) * Math.sin(dLn / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); };
 
-  // ---------- état ----------
-  let S = { student:'', start:'10:00', points:[] };
-  let selected = null, adding = false, uid = 0;
-  const markers = {};
-  let routeLine = null;
-  
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} }
-  function load() {
+  let cfg = { url: '', key: '' };
+  let data = { classes: [], students: [], requests: [] };
+  let draftClasses = null;          // liste en cours d'édition
+  let classSel = '', hidden = {}, detId = null, fitted = false, timer = null;
+  const colorOf = {};               // identifiant d'élève constructeur -> couleur
+  const colFor = id => colorOf[id] || (colorOf[id] = COLORS[Object.keys(colorOf).length % COLORS.length]);
+
+  try { const d = JSON.parse(localStorage.getItem(CKEY) || 'null'); if (d) cfg = Object.assign(cfg, d); } catch (_) {}
+  $('#url').value = cfg.url || ''; $('#key').value = cfg.key || '';
+
+  function flash(sel, msg, ok) { const s = $(sel); s.hidden = !msg; s.className = 'status ' + (ok ? 'ok' : 'err'); s.textContent = msg || ''; }
+  async function admin(action, extra = {}) {
+    if (!cfg.url || !cfg.key) return { ok: false, error: 'Renseignez l\'adresse du serveur et la clé enseignant.' };
     try {
-      const d = JSON.parse(localStorage.getItem(KEY) || 'null');
-      if (d && Array.isArray(d.points)) S = { student: d.student || '', start: d.start || '10:00', points: d.points.slice(0, MAX) };
-    } catch (_) {}
-    S.points.forEach(p => { p.id = p.id || ('p' + (++uid)); uid = Math.max(uid, +String(p.id).replace(/\D/g, '') || 0); });
+      const r = await fetch(cfg.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action, key: cfg.key }, extra)) });
+      return await r.json();
+    } catch (_) { return { ok: false, error: 'Connexion impossible.' }; }
   }
 
-  // ---------- carte ----------
-  const map = L.map('map', { zoomControl: true, minZoom: 11, maxBounds: [[50.70, 4.10], [51.02, 4.62]], maxBoundsViscosity: .8 })
-    .setView([50.8467, 4.3525], 13);
-  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  });
-  const clair = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-    maxZoom: 19, subdomains: 'abcd', attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> © <a href="https://carto.com/attributions">CARTO</a>'
-  });
-  osm.addTo(map);
-  L.control.layers({ 'Plan standard': osm, 'Plan clair': clair }, null, { position: 'topright' }).addTo(map);
+  /* ---------- carte ---------- */
+  const map = L.map('map', { minZoom: 10 }).setView([50.8467, 4.3525], 12);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map);
   L.control.scale({ metric: true, imperial: false }).addTo(map);
+  const layer = L.layerGroup().addTo(map);
 
-  // ---------- repères connus (facultatifs) ----------
-  const poiLayer = L.layerGroup();
-  LANDMARKS.forEach(([name, lat, lng, cat]) => {
-    const m = L.marker([lat, lng], { icon: L.divIcon({ className: '', html: `<div class="mini" style="background:${CATS[cat].c}"></div>`, iconSize: [16, 16] }), keyboard: false });
-    m.bindTooltip(esc(name), { className: 'lt', direction: 'top' });
-    m.bindPopup(() => {
-      const d = document.createElement('div');
-      d.innerHTML = `<b>${esc(name)}</b><br><button class="poi-btn">Ajouter au circuit</button>`;
-      d.querySelector('button').onclick = () => { addPoint(L.latLng(lat, lng), { name, cat }); map.closePopup(); };
-      return d;
-    });
-    poiLayer.addLayer(m);
-  });
-  $('#poiBtn').addEventListener('click', e => {
-    const on = e.currentTarget.getAttribute('aria-pressed') !== 'true';
-    e.currentTarget.setAttribute('aria-pressed', on);
-    if (on) poiLayer.addTo(map); else poiLayer.remove();
+  /* ---------- config ---------- */
+  $('#saveCfg').addEventListener('click', async () => {
+    cfg = { url: $('#url').value.trim(), key: $('#key').value.trim() };
+    try { localStorage.setItem(CKEY, JSON.stringify(cfg)); } catch (_) {}
+    draftClasses = null; fitted = false;
+    await refresh();
   });
 
-  // ---------- ajout de points ----------
-  function setAdding(on) {
-    adding = on && S.points.length < MAX;
-    $('#addBtn').setAttribute('aria-pressed', adding);
-    $('#map').classList.toggle('adding', adding);
-    $('#hint').textContent = adding ? 'Cliquez à l\'endroit voulu sur la carte pour placer le point.'
-      : (S.points.length >= MAX ? `Vous avez placé les ${MAX} points : supprimez-en un pour en ajouter un autre.` : 'Cliquez sur « Placer un point », puis sur la carte. Glissez un repère pour l\'ajuster.');
-    $('#addBtn').disabled = S.points.length >= MAX;
+  /* ---------- classes ---------- */
+  function renderClasses() {
+    const list = draftClasses || data.classes;
+    $('#clsChips').innerHTML = list.map((c, i) => `<li>${esc(c)}<button data-i="${i}" aria-label="Retirer ${esc(c)}">×</button></li>`).join('') || '<li class="muted" style="border:0;background:none">Aucune classe : ajoutez-en une.</li>';
+    $('#clsSave').disabled = !draftClasses;
+    $('#clsState').textContent = draftClasses ? 'Modifications non publiées' : (list.length ? 'Publiée' : '');
   }
-  $('#addBtn').addEventListener('click', () => setAdding(!adding));
-  map.on('click', e => { if (adding) { addPoint(e.latlng); setAdding(false); } });
-
-  function addPoint(latlng, pre = {}) {
-    if (S.points.length >= MAX) { alert(`Le circuit est limité à ${MAX} points.`); return; }
-    const p = { id: 'p' + (++uid), lat: latlng.lat, lng: latlng.lng, name: pre.name || '', cat: pre.cat || 'autre', prio: 2, dur: 45, comment: '' };
-    S.points.push(p); selected = p.id; save(); render(true); setAdding(false);
-  }
-
-  // ---------- recherche de lieu (Nominatim / OpenStreetMap) ----------
-  let searchTimer;
-  $('#q').addEventListener('input', e => {
-    clearTimeout(searchTimer);
-    const q = e.target.value.trim();
-    if (q.length < 3) { $('#results').hidden = true; return; }
-    searchTimer = setTimeout(async () => {
-      try {
-        const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=be&viewbox=4.24,50.92,4.50,50.76&bounded=1&accept-language=fr&q=' + encodeURIComponent(q);
-        const rows = await (await fetch(url)).json();
-        const ul = $('#results'); ul.innerHTML = '';
-        if (!rows.length) { ul.innerHTML = '<li>Aucun résultat dans la Région de Bruxelles-Capitale</li>'; ul.hidden = false; return; }
-        rows.forEach(r => {
-          const li = document.createElement('li');
-          li.textContent = r.display_name.split(',').slice(0, 3).join(',');
-          li.onclick = () => {
-            ul.hidden = true; $('#q').value = '';
-            const ll = L.latLng(+r.lat, +r.lon);
-            map.flyTo(ll, 16);
-            L.popup().setLatLng(ll).setContent(((() => {
-              const d = document.createElement('div');
-              d.innerHTML = `<b>${esc(r.display_name.split(',')[0])}</b><br><button class="poi-btn">Ajouter au circuit</button>`;
-              d.querySelector('button').onclick = () => { addPoint(ll, { name: r.display_name.split(',')[0] }); map.closePopup(); };
-              return d;
-            })())).openOn(map);
-          };
-          ul.appendChild(li);
-        });
-        ul.hidden = false;
-      } catch (_) {
-        $('#results').innerHTML = '<li>Recherche indisponible (connexion ?)</li>'; $('#results').hidden = false;
-      }
-    }, 450);
+  $('#clsChips').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    draftClasses = (draftClasses || data.classes).filter((_, i) => i !== +b.dataset.i); renderClasses();
   });
-  document.addEventListener('click', e => { if (!e.target.closest('.grow')) $('#results').hidden = true; });
+  $('#clsForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const v = $('#clsNew').value.replace(/\s+/g, ' ').trim(); if (!v) return;
+    const l = (draftClasses || data.classes).slice();
+    if (!l.some(c => c.toLowerCase() === v.toLowerCase())) l.push(v);
+    draftClasses = l; $('#clsNew').value = ''; renderClasses();
+  });
+  $('#clsSave').addEventListener('click', async () => {
+    const r = await admin('setclasses', { classes: draftClasses });
+    if (!r.ok) { flash('#status', r.error, false); return; }
+    draftClasses = null; data.classes = r.classes; renderClasses(); renderFilter(); flash('#status', 'Liste des classes publiée : les élèves peuvent la cocher.', true);
+  });
+  function renderFilter() {
+    const cur = classSel, set = new Set([...data.classes, ...data.students.map(s => s.classe)]);
+    $('#classFilter').innerHTML = '<option value="">Toutes les classes</option>' + [...set].sort((a, b) => a.localeCompare(b, 'fr')).map(c => `<option ${c === cur ? 'selected' : ''}>${esc(c)}</option>`).join('');
+  }
+  $('#classFilter').addEventListener('change', e => { classSel = e.target.value; fitted = false; renderAll(); });
 
-  // ---------- calculs ----------
-  const hav = (a, b) => {
-    const R = 6371, rad = x => x * Math.PI / 180;
-    const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
-    const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
-    return 2 * R * Math.asin(Math.sqrt(h));
-  };
-  const toMin = t => { const m = /^(\d{1,2}):(\d{2})$/.exec(t || ''); return m ? +m[1] * 60 + +m[2] : 600; };
-  const fmtT = m => { m = Math.round(m); const h = Math.floor(m / 60) % 24, mm = m % 60; return `${String(h).padStart(2, '0')}h${String(mm).padStart(2, '0')}`; };
-  const fmtD = m => m >= 60 ? `${Math.floor(m / 60)} h ${String(Math.round(m % 60)).padStart(2, '0')}` : `${Math.round(m)} min`;
-  const fmtKm = k => k < 1 ? `${Math.round(k * 1000)} m` : `${k.toFixed(1).replace('.', ',')} km`;
+  /* ---------- données ---------- */
+  async function refresh(silent) {
+    const r = await admin('all');
+    if (!r.ok) { $('#conn').textContent = ''; if (!silent || /Clé/.test(r.error)) flash(cfg.url ? '#cfgStatus' : '#status', r.error, false); return; }
+    flash('#cfgStatus', '', true);
+    data = r; $('#conn').textContent = 'Connecté'; renderFilter(); renderAll();
+  }
+  $('#refresh').addEventListener('click', () => refresh());
+  function setAuto() { clearInterval(timer); if ($('#auto').checked) timer = setInterval(() => refresh(true), 6000); }
+  $('#auto').addEventListener('change', setAuto);
 
-  function schedule() {
-    let t = toMin(S.start), dist = 0, walk = 0, visit = 0;
-    const rows = S.points.map((p, i) => {
-      const arrive = t, leave = arrive + p.dur;
-      let w = null;
-      if (i < S.points.length - 1) {
-        const km = hav(p, S.points[i + 1]) * 1.3;
-        w = { km, min: km / 4.8 * 60 };
-        dist += km; walk += w.min; t = leave + w.min;
-      } else t = leave;
-      visit += p.dur;
-      return { p, arrive, leave, w };
-    });
-    return { rows, dist, walk, visit, end: t };
+  const reqs = () => data.requests.filter(q => !classSel || q.classe === classSel);
+  const studs = () => data.students.filter(s => !classSel || s.classe === classSel);
+  const pts = q => (q.itin && q.itin.points) || [];
+  const avg = q => q.ev ? (q.ev.c1 + q.ev.c2 + q.ev.c3) / 3 : null;
+
+  function renderAll() { renderClasses(); renderWho(); renderReqs(); drawMap(); renderDetail(); renderSynth(); }
+
+  function renderWho() {
+    const l = studs().slice().sort((a, b) => (b.online - a.online) || (a.prenom + a.nom).localeCompare(b.prenom + b.nom, 'fr'));
+    $('#onCnt').textContent = `${l.filter(s => s.online).length} en ligne / ${l.length}`;
+    $('#who').innerHTML = l.map(s => `<li class="${s.online ? '' : 'off'}"><span class="led"></span>${esc(s.prenom)} ${esc(s.nom)}<span class="cl">${esc(s.classe)}</span><button class="small danger" data-rm="${esc(s.id)}" aria-label="Supprimer ${esc(s.prenom)} ${esc(s.nom)}">×</button></li>`).join('');
+    $('#whoEmpty').hidden = l.length > 0;
   }
 
-  // ---------- rendu ----------
-  const pinIcon = (i, cat, sel) => L.divIcon({
-    className: '', iconSize: [30, 30], iconAnchor: [15, 30], tooltipAnchor: [14, -18],
-    html: `<div class="pin${sel ? ' sel' : ''}" style="background:${CATS[cat].c}"><span>${i + 1}</span></div>`
+  $('#who').addEventListener('click', async e => {
+    const b = e.target.closest('[data-rm]'); if (!b) return;
+    const s = data.students.find(x => x.id === b.dataset.rm); if (!s) return;
+    if (!confirm(`Supprimer ${s.prenom} ${s.nom} ? Sa demande et l'itinéraire qu'il construisait seront supprimés.`)) return;
+    const r = await admin('remove', { id: s.id }); if (!r.ok) return flash('#status', r.error, false); refresh();
   });
-  const label = p => p.name || 'Point sans nom';
 
-  function syncMarkers() {
-    const ids = new Set(S.points.map(p => p.id));
-    Object.keys(markers).forEach(id => { if (!ids.has(id)) { markers[id].remove(); delete markers[id]; } });
-    S.points.forEach((p, i) => {
-      let m = markers[p.id];
-      if (!m) {
-        m = L.marker([p.lat, p.lng], { draggable: true, icon: pinIcon(i, p.cat, false), zIndexOffset: 1000 }).addTo(map);
-        m.bindTooltip('', { className: 'lt', permanent: true, direction: 'right', offset: [8, 0] });
-        m.on('click', () => { selected = p.id; render(); document.getElementById('pt-' + p.id)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); });
-        m.on('dragend', () => { const ll = m.getLatLng(); p.lat = ll.lat; p.lng = ll.lng; save(); drawRoute(); updateSummary(); });
-        markers[p.id] = m;
-      }
-      m.setIcon(pinIcon(i, p.cat, p.id === selected));
-      m.setTooltipContent(esc(label(p)));
+  function renderReqs() {
+    const l = reqs();
+    $('#reqCnt').textContent = `(${l.length})`; $('#reqsEmpty').hidden = l.length > 0;
+    const ul = $('#reqs'); ul.innerHTML = '';
+    l.forEach(q => {
+      const col = q.takenBy ? colFor(q.takenBy) : '#b8c0c8', n = pts(q).length, a = avg(q);
+      const tag = q.status === 'free' ? '<span class="tag free">Libre</span>' : q.status === 'taken' ? '<span class="tag">En construction</span>' : '<span class="tag" style="color:var(--ok);border-color:var(--ok)">Envoyé</span>';
+      const li = document.createElement('li'); li.className = detId === q.id ? 'sel' : '';
+      li.innerHTML = `<div class="q">${esc(q.text)}</div>
+        <div class="meta"><span class="sw" style="background:${col}"></span><span>${esc(q.author)} <b>→</b> ${q.taker ? esc(q.taker) : '—'}</span><span>${esc(q.classe)}</span>${tag}<span>${n} point${n > 1 ? 's' : ''}</span>${a !== null ? `<span class="score">★ ${a.toFixed(1).replace('.', ',')}/5</span>` : ''}</div>
+        <div class="acts">
+          ${n ? `<label><input type="checkbox" data-act="show" ${hidden[q.id] ? '' : 'checked'}> carte</label>` : ''}
+          <button class="small" data-act="det">Voir</button>
+          ${q.status === 'sent' ? '<button class="small" data-act="unsend">Rouvrir</button>' : ''}
+          <button class="small danger" data-act="del">Retirer</button>
+        </div>`;
+      li.dataset.id = q.id; ul.appendChild(li);
     });
   }
-  function drawRoute() {
-    if (routeLine) { routeLine.remove(); routeLine = null; }
-    if (S.points.length > 1) routeLine = L.polyline(S.points.map(p => [p.lat, p.lng]), { color: '#1f4e6b', weight: 4, opacity: .85, dashArray: '9 7' }).addTo(map);
-  }
-
-  function render(fit) {
-    const list = $('#list');
-    list.innerHTML = '';
-    const sch = schedule();
-    S.points.forEach((p, i) => {
-      const r = sch.rows[i];
-      const d = document.createElement('div');
-      d.className = 'pt' + (p.id === selected ? ' sel' : ''); d.id = 'pt-' + p.id; d.dataset.id = p.id;
-      d.innerHTML = `
-        <div class="pt-head">
-          <span class="badge" style="background:${CATS[p.cat].c}">${i + 1}</span>
-          <span class="pt-title">${esc(label(p))}<span class="pt-time" data-time>${fmtT(r.arrive)} → ${fmtT(r.leave)}</span></span>
-          <button data-act="up" aria-label="Monter" ${i === 0 ? 'disabled' : ''}>↑</button>
-          <button data-act="down" aria-label="Descendre" ${i === S.points.length - 1 ? 'disabled' : ''}>↓</button>
-          <button data-act="del" class="del" aria-label="Supprimer">×</button>
-        </div>
-        <div style="margin-bottom:8px"><label>Nom du lieu</label><input data-f="name" maxlength="60" value="${esc(p.name)}" placeholder="Nom du lieu"></div>
-        <div class="grid2">
-          <div><label>Classification</label><select data-f="cat">${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${k === p.cat ? 'selected' : ''}>${v.n}</option>`).join('')}</select></div>
-          <div><label>Priorité</label><select data-f="prio">${Object.entries(PRIOS).map(([k, v]) => `<option value="${k}" ${+k === +p.prio ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
-        </div>
-        <div class="grid2">
-          <div><label>Durée de la visite</label><select data-f="dur">${DURS.map(v => `<option value="${v}" ${v === +p.dur ? 'selected' : ''}>${fmtD(v)}</option>`).join('')}</select></div>
-          <div></div>
-        </div>
-        <div><label>Pourquoi ce lieu ? Commentaire</label><textarea data-f="comment" maxlength="500" placeholder="Ce que je veux voir, pourquoi ici, à ce moment…">${esc(p.comment)}</textarea></div>`;
-      list.appendChild(d);
-    });
-    $('#empty').hidden = S.points.length > 0;
-    $('#cnt').textContent = `(${S.points.length}/${MAX})`;
-    syncMarkers(); drawRoute(); updateSummary(); setAdding(false);
-    if (fit && S.points.length) { const p = S.points[S.points.length - 1]; map.panTo([p.lat, p.lng]); }
-  }
-
-  function updateSummary() {
-    const card = $('#sumCard');
-    card.hidden = S.points.length === 0;
-    if (!S.points.length) return;
-    const s = schedule();
-    $('#stat').innerHTML = `
-      <div><b>${fmtD(s.visit)}</b><span>de visites</span></div>
-      <div><b>${fmtD(s.walk)}</b><span>de marche · ${fmtKm(s.dist)}</span></div>
-      <div><b>${fmtT(toMin(S.start))}</b><span>départ</span></div>
-      <div><b>${fmtT(s.end)}</b><span>fin du circuit</span></div>`;
-    const counts = {};
-    S.points.forEach(p => counts[p.cat] = (counts[p.cat] || 0) + 1);
-    $('#cats').innerHTML = Object.entries(counts).map(([k, n]) => `<li><i style="background:${CATS[k].c}"></i>${esc(CATS[k].n)} · ${n}</li>`).join('');
-    $('#sched').innerHTML = s.rows.map((r, i) => `
-      <li><b>${fmtT(r.arrive)}–${fmtT(r.leave)}</b> · ${i + 1}. ${esc(label(r.p))}<br><span class="muted">${esc(CATS[r.p.cat].n)} · ${esc(PRIOS[r.p.prio])}</span></li>
-      ${r.w ? `<li class="walk">↓ marche ${fmtD(r.w.min)} (${fmtKm(r.w.km)})</li>` : ''}`).join('');
-    // met à jour les horaires affichés sur les fiches sans les reconstruire
-    s.rows.forEach(r => { const el = document.querySelector(`#pt-${r.p.id} [data-time]`); if (el) el.textContent = `${fmtT(r.arrive)} → ${fmtT(r.leave)}`; });
-  }
-
-  // ---------- édition des fiches (délégation) ----------
-  const listEl = $('#list');
-  listEl.addEventListener('input', e => {
-    const f = e.target.dataset.f; if (!f) return;
-    const id = e.target.closest('.pt').dataset.id, p = S.points.find(q => q.id === id);
-    p[f] = (f === 'dur' || f === 'prio') ? +e.target.value : e.target.value;
-    if (f === 'name') { e.target.closest('.pt').querySelector('.pt-title').firstChild.textContent = label(p); }
-    if (f === 'cat') { e.target.closest('.pt').querySelector('.badge').style.background = CATS[p.cat].c; }
-    save(); syncMarkers(); updateSummary();
+  $('#reqs').addEventListener('click', async e => {
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const id = b.closest('li').dataset.id, q = data.requests.find(x => x.id === id); if (!q) return;
+    if (b.dataset.act === 'show') { hidden[id] = !b.checked; drawMap(); return; }
+    if (b.dataset.act === 'det') { detId = id; renderReqs(); renderDetail(); if (pts(q).length) map.fitBounds(L.latLngBounds(pts(q).map(p => [p.lat, p.lng])), { padding: [60, 60], maxZoom: 16 }); return; }
+    if (b.dataset.act === 'unsend') { if (!confirm('Rouvrir cet itinéraire ? L\'envoi et l\'évaluation sont annulés ; l\'élève pourra le modifier.')) return; const r = await admin('unsend', { requestId: id }); if (!r.ok) return flash('#status', r.error, false); refresh(); return; }
+    if (b.dataset.act === 'del') { if (!confirm(`Retirer la demande « ${q.text} » ? L'itinéraire associé sera perdu.`)) return; const r = await admin('delreq', { requestId: id }); if (!r.ok) return flash('#status', r.error, false); if (detId === id) detId = null; refresh(); }
   });
-  listEl.addEventListener('click', e => {
-    const card = e.target.closest('.pt'); if (!card) return;
-    const id = card.dataset.id, i = S.points.findIndex(q => q.id === id);
-    const act = e.target.closest('button')?.dataset.act;
-    if (act === 'del') { if (!confirm('Supprimer ce point ?')) return; S.points.splice(i, 1); if (selected === id) selected = null; save(); render(); return; }
-    if (act === 'up' && i > 0) { [S.points[i - 1], S.points[i]] = [S.points[i], S.points[i - 1]]; save(); render(); return; }
-    if (act === 'down' && i < S.points.length - 1) { [S.points[i + 1], S.points[i]] = [S.points[i], S.points[i + 1]]; save(); render(); return; }
-    if (selected !== id) {
-      selected = id; document.querySelectorAll('.pt').forEach(c => c.classList.toggle('sel', c.dataset.id === id));
-      syncMarkers(); const p = S.points[i]; map.panTo([p.lat, p.lng]);
-    }
-  });
+  $('#allOn').addEventListener('click', () => { hidden = {}; renderReqs(); drawMap(); });
+  $('#allOff').addEventListener('click', () => { reqs().forEach(q => hidden[q.id] = true); renderReqs(); drawMap(); });
 
-  $('#student').addEventListener('input', e => { S.student = e.target.value; save(); });
-  $('#start').addEventListener('input', e => { S.start = e.target.value || '10:00'; save(); updateSummary(); });
-
-  // ---------- export / import / impression ----------
-  $('#export').addEventListener('click', () => {
-    const out = { version: 1, student: S.student, start: S.start, points: S.points.map(({ lat, lng, name, cat, prio, dur, comment }) => ({ lat, lng, name, cat, prio, dur, comment })) };
-    const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'circuit-' + (S.student.trim().replace(/[^\p{L}\p{N}_-]+/gu, '-') || 'eleve') + '.json';
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  });
-  $('#print').addEventListener('click', () => window.print());
-  $('#clear').addEventListener('click', () => {
-    if (!S.points.length || !confirm('Effacer tous les points ?')) return;
-    S.points = []; selected = null; save(); render();
-  });
-
-  // ================= Élèves de la classe =================
-  const SKEY = 'circuit-bruxelles-eleves-v2', CKEY = 'circuit-bruxelles-collecte-v1';
-  let subs = [], cfg = { url: '', key: '' }, detailKey = null, classSel = '', autoTimer = null, firstFit = true;
-  const studentsGroup = L.layerGroup().addTo(map);
-  const keyOf = st => [st.nom, st.prenom, st.classe].map(x => String(x || '').trim().toLowerCase()).join('|');
-  const whoOf = st => `${st.prenom} ${st.nom}`.trim() || 'Élève';
-  const MOMENTS = ['Matin', 'Midi', 'Après-midi', 'Soirée', 'Nuit', 'Heure non précisée'];
-  const momentOf = t => {
-    if (!/^\d{1,2}:\d{2}$/.test(t || '')) return 'Heure non précisée';
-    const h = toMin(t) / 60; return h >= 5 && h < 11 ? 'Matin' : h >= 11 && h < 14 ? 'Midi' : h >= 14 && h < 18 ? 'Après-midi' : h >= 18 && h < 22 ? 'Soirée' : 'Nuit';
-  };
-  const saveSubs = () => { try { localStorage.setItem(SKEY, JSON.stringify(subs)); } catch (_) {} };
-
-  function normItin(d) {
-    if (!d || !Array.isArray(d.points)) return null;
-    let pts = d.points.slice(0, 12).map(p => ({
-      lat: +p.lat, lng: +p.lng, name: String(p.name || '').slice(0, 60), cat: CATS[p.cat] ? p.cat : 'autre',
-      time: /^\d{1,2}:\d{2}$/.test(p.time || '') ? p.time : '', dur: num(p.dur, 0), comment: String(p.comment || '').slice(0, 500),
-    })).filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lng));
-    if (!pts.length) return null;
-    if (pts.every(p => p.time)) pts = pts.map((p, i) => [p, i]).sort((a, b) => (toMin(a[0].time) - toMin(b[0].time)) || a[1] - b[1]).map(x => x[0]);
-    return { titre: String(d.titre || '').slice(0, 80), pour: String(d.pour || '').slice(0, 80), intro: String(d.intro || '').slice(0, 200), points: pts };
-  }
-  function fromFile(d, fname) {
-    const it = normItin(d); if (!it) return null;
-    const st0 = d.student && typeof d.student === 'object' ? d.student : { prenom: String(d.student || fname || '').replace(/\.json$/i, ''), nom: '', classe: '' };
-    return Object.assign(it, { student: { prenom: String(st0.prenom || '').slice(0, 40), nom: String(st0.nom || '').slice(0, 40), classe: String(st0.classe || '').slice(0, 12) }, sendTo: '', recvFrom: '' });
-  }
-  function pickColor(used) { return STUDENT_COLORS.find(c => !used.has(c)) || `hsl(${(used.size * 47) % 360} 55% 45%)`; }
-  function addFileSub(sub) {
-    const k = keyOf(sub.student), i = subs.findIndex(x => keyOf(x.student) === k);
-    if (i >= 0) { sub.color = subs[i].color; sub.shown = subs[i].shown; sub.id = subs[i].id; sub.sendTo = subs[i].sendTo; sub.recvFrom = subs[i].recvFrom; subs[i] = sub; }
-    else { sub.color = pickColor(new Set(subs.map(x => x.color))); sub.shown = true; subs.push(sub); }
-  }
-  function ingest(rows) {
-    const old = Object.fromEntries(subs.map(x => [keyOf(x.student), x]));
-    const used = new Set(subs.map(x => x.color));
-    const fresh = rows.map(r => {
-      const st = { prenom: r.prenom, nom: r.nom, classe: r.classe }, it = normItin(r.itin), o = old[keyOf(st)];
-      const color = o && o.color ? o.color : (() => { const c = pickColor(used); used.add(c); return c; })();
-      return { id: r.id, student: st, titre: it ? it.titre : '', pour: it ? it.pour : '', intro: it ? it.intro : '', points: it ? it.points : [],
-        sendTo: r.sendTo || '', recvFrom: r.recvFrom || '', itinAt: r.itinAt || '', color, shown: o ? o.shown : true };
-    });
-    const serverKeys = new Set(fresh.map(x => keyOf(x.student)));
-    subs = fresh.concat(subs.filter(x => !x.id && !serverKeys.has(keyOf(x.student))));
-  }
-  const visibleSubs = () => subs.filter(x => x.shown && x.points.length && (!classSel || x.student.classe === classSel));
-  const nameById = id => { const x = subs.find(q => q.id === id); return x ? whoOf(x.student) : '?'; };
-
-  function renderStudents() {
-    saveSubs();
-    const inClass = subs.filter(x => !classSel || x.student.classe === classSel);
-    $('#scnt').textContent = subs.length ? `(${subs.length})` : '';
-    $('#noStud').hidden = subs.length > 0;
-    const withItin = inClass.filter(x => x.points.length).length, links = inClass.filter(x => x.sendTo).length;
-    $('#stats').textContent = subs.length ? `${inClass.length} élève(s) · ${withItin} itinéraire(s) reçu(s) · ${links} échange(s) entre élèves` : '';
-    const classes = [...new Set(subs.map(x => x.student.classe).filter(Boolean))].sort();
-    const sel = $('#classFilter'), keep = classSel;
-    sel.innerHTML = '<option value="">Toutes les classes</option>' + classes.map(c => `<option ${c === keep ? 'selected' : ''}>${esc(c)}</option>`).join('');
-    if (keep && !classes.includes(keep)) classSel = '';
-
-    const ul = $('#legend'); ul.innerHTML = '';
-    inClass.forEach(x => {
-      const has = x.points.length > 0, li = document.createElement('li');
-      li.style.flexWrap = 'wrap';
-      const rel = [x.sendTo ? `→ a envoyé à ${esc(nameById(x.sendTo))}` : '', x.recvFrom ? `← a reçu de ${esc(nameById(x.recvFrom))}` : ''].filter(Boolean).join(' · ');
-      li.innerHTML = `<input type="checkbox" style="width:auto;min-height:0" ${x.shown && has ? 'checked' : ''} ${has ? '' : 'disabled'} aria-label="Afficher">
-        <i style="background:${has ? x.color : '#bbb'}"></i>
-        <span style="flex:1;min-width:0">${esc(whoOf(x.student))} <span class="muted">· ${esc(x.student.classe || '—')} · ${has ? x.points.length + ' pts' : 'connecté, pas encore d\'envoi'}</span>${rel ? `<br><span class="muted">${rel}</span>` : ''}</span>
-        ${has ? '<button data-a="see">Voir</button>' : ''}${x.sendTo && x.id && cfg.url ? '<button data-a="unsend" title="Libère le destinataire et rouvre la modification">Annuler l\'envoi</button>' : ''}<button data-a="del" aria-label="Retirer">×</button>`;
-      li.querySelector('input').onchange = e => { x.shown = e.target.checked; renderStudents(); };
-      const see = li.querySelector('[data-a=see]');
-      if (see) see.onclick = () => { x.shown = true; detailKey = keyOf(x.student); renderStudents(); map.fitBounds(L.latLngBounds(x.points.map(p => [p.lat, p.lng])), { padding: [60, 60], maxZoom: 15 }); };
-      const un = li.querySelector('[data-a=unsend]');
-      if (un) un.onclick = async () => { if (!confirm(`Annuler l'envoi de ${whoOf(x.student)} ? Son destinataire redevient disponible.`)) return; if (await admin('unsend', { id: x.id })) refresh(true); };
-      li.querySelector('[data-a=del]').onclick = async () => {
-        if (x.id && cfg.url) { if (!confirm(`Supprimer ${whoOf(x.student)} du serveur (définitif) ?`)) return; if (!(await admin('remove', { id: x.id }))) return; subs = subs.filter(q => q !== x); }
-        else { if (!confirm('Retirer ce circuit de l\'affichage ?')) return; subs = subs.filter(q => q !== x); }
-        if (detailKey === keyOf(x.student)) detailKey = null; renderStudents();
-      };
-      ul.appendChild(li);
-    });
-    drawStudents(); renderDetail(); renderSynthesis();
-  }
-
-  function drawStudents() {
-    studentsGroup.clearLayers();
-    visibleSubs().forEach(x => {
-      if (x.points.length > 1) L.polyline(x.points.map(p => [p.lat, p.lng]), { color: x.color, weight: 2, opacity: .9 }).addTo(studentsGroup);
-      x.points.forEach((p, i) => {
-        L.marker([p.lat, p.lng], { icon: L.divIcon({ className: '', html: `<div class="mini" style="background:${x.color};width:22px;height:22px;font-size:11px">${i + 1}</div>`, iconSize: [22, 22] }) })
-          .bindPopup(`<b>${esc(p.name || 'Point sans nom')}</b><br>${esc(whoOf(x.student))} · ${esc(x.student.classe)}<br>${p.time ? esc(p.time) + ' · ' : ''}${esc(CATS[p.cat].n)}<br><i>${esc(p.comment)}</i>`).addTo(studentsGroup);
+  function drawMap() {
+    layer.clearLayers();
+    const all = [];
+    reqs().forEach(q => {
+      const p = pts(q); if (!p.length || hidden[q.id] || !q.takenBy) return;
+      const col = colFor(q.takenBy);
+      if (p.length > 1) L.polyline(p.map(x => [x.lat, x.lng]), { color: col, weight: 2, opacity: .8 }).addTo(layer);
+      p.forEach((x, i) => {
+        all.push([x.lat, x.lng]);
+        L.marker([x.lat, x.lng], { icon: L.divIcon({ className: '', iconSize: [20, 20], iconAnchor: [10, 10], html: `<div class="mini" style="background:${col}">${i + 1}</div>` }) })
+          .bindTooltip(`<b>${esc((q.taker || '').split(' ')[0])}</b> · ${esc(x.time || '')} ${esc(x.name || '')}<br><i>« ${esc(q.text)} »</i>`, { className: 'lt' }).addTo(layer);
       });
     });
+    $('#mapHint').textContent = all.length ? `${all.length} point(s) affichés. Une couleur par élève qui construit.` : 'Les itinéraires apparaissent ici dès que les élèves placent leurs points.';
+    if (all.length && !fitted) { fitted = true; map.fitBounds(L.latLngBounds(all), { padding: [40, 40], maxZoom: 15 }); }
   }
 
   function renderDetail() {
-    const box = $('#detail'); const x = subs.find(q => keyOf(q.student) === detailKey && q.points.length);
-    if (!x) { box.innerHTML = ''; return; }
-    box.innerHTML = `<div class="pt" style="margin-top:12px"><div class="pt-head"><span class="badge" style="background:${x.color}">●</span><span class="pt-title">${esc(x.titre || 'Itinéraire de ' + whoOf(x.student))}<span class="pt-time">${esc(whoOf(x.student))} · ${esc(x.student.classe)}${x.pour ? ' · pour ' + esc(x.pour) : ''}</span></span></div>
-      ${x.intro ? `<p class="muted">${esc(x.intro)}</p>` : ''}
-      <ol class="sched">${x.points.map(p => `<li><b>${esc(p.time || '—')}</b> · ${esc(p.name || 'Point sans nom')}<br><span class="muted">${esc(CATS[p.cat].n)}${p.dur ? ' · ' + fmtD(p.dur) : ''}</span>${p.comment ? `<br><span>${esc(p.comment)}</span>` : ''}</li>`).join('')}</ol></div>`;
+    const q = data.requests.find(x => x.id === detId);
+    $('#detCard').hidden = !q; if (!q) return;
+    $('#detTitle').textContent = `« ${q.text} »`;
+    const it = q.itin, p = pts(q);
+    $('#det').innerHTML = `<p class="muted">Demandé par <b>${esc(q.author)}</b> · construit par <b>${esc(q.taker || '—')}</b></p>
+      ${it && it.intro ? `<p>${esc(it.intro)}</p>` : ''}
+      <ol class="det">${p.map((x, i) => `<li><b>${i + 1}. ${esc(x.time || '')} ${esc(x.name || 'Sans nom')}</b>${x.dur ? ` <span class="muted">· ${x.dur} min</span>` : ''}${x.comment ? `<blockquote>${esc(x.comment)}</blockquote>` : ''}</li>`).join('') || '<li class="muted">Aucun point.</li>'}</ol>
+      ${q.ev ? `<h3 style="margin:12px 0 6px;font-size:.95rem">Évaluation du demandeur</h3><ul class="list">${CRITS.map(([k, t]) => `<li>${esc(t)} : <b>${q.ev[k]}/5</b></li>`).join('')}</ul>${q.ev.comment ? `<blockquote>${esc(q.ev.comment)}</blockquote>` : ''}` : ''}`;
   }
+  $('#detClose').addEventListener('click', () => { detId = null; renderReqs(); renderDetail(); });
 
-  function renderSynthesis() {
-    const vs = visibleSubs(), card = $('#synthCard');
-    card.hidden = !vs.length; if (!vs.length) return;
-    const clusters = [];
-    vs.forEach(x => x.points.forEach(p => {
-      let c = clusters.find(c => hav(c, p) <= 0.15);
-      if (!c) { c = { lat: p.lat, lng: p.lng, who: new Set(), names: {} }; clusters.push(c); }
-      c.who.add(keyOf(x.student));
-      const nm = (p.name || '').trim(); if (nm) c.names[nm] = (c.names[nm] || 0) + 1;
+  function renderSynth() {
+    const rs = reqs(), ss = studs();
+    const built = rs.filter(q => pts(q).length), sent = rs.filter(q => q.status === 'sent'), evd = rs.filter(q => q.ev);
+    $('#stat').innerHTML = `<div><b>${ss.filter(s => s.online).length}/${ss.length}</b><span>élèves en ligne</span></div><div><b>${rs.length}</b><span>demandes</span></div><div><b>${sent.length}</b><span>itinéraires envoyés</span></div>
+      <div><b>${rs.filter(q => q.status === 'free').length}</b><span>demandes libres</span></div><div><b>${built.length}</b><span>en construction</span></div><div><b>${evd.length}</b><span>évaluations</span></div>`;
+    $('#evBars').innerHTML = evd.length ? CRITS.map(([k, t]) => { const m = evd.reduce((s, q) => s + q.ev[k], 0) / evd.length; return `<div class="b"><span class="t">${esc(t)}</span><div class="track"><i style="width:${m * 20}%"></i></div><b>${m.toFixed(1).replace('.', ',')}</b></div>`; }).join('') : '<p class="muted">Aucune évaluation pour l\'instant.</p>';
+    const cl = [];
+    built.forEach(q => pts(q).forEach(p => {
+      let c = cl.find(c => hav(c, p) <= 0.15);
+      if (!c) { c = { lat: p.lat, lng: p.lng, who: new Set(), names: {} }; cl.push(c); }
+      c.who.add(q.takenBy); const n = (p.name || '').trim(); if (n) c.names[n] = (c.names[n] || 0) + 1;
     }));
-    const multi = clusters.filter(c => c.who.size >= 2).sort((a, b) => b.who.size - a.who.size).slice(0, 8);
-    $('#synth').innerHTML = multi.length
-      ? multi.map(c => { const nm = Object.entries(c.names).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Lieu sans nom'; return `<li><b>${c.who.size} élèves</b> · ${esc(nm)}</li>`; }).join('')
-      : '<li class="muted">Aucun lieu cité par plusieurs élèves.</li>';
-    const cats = {}, moms = {};
-    vs.forEach(x => x.points.forEach(p => { cats[p.cat] = (cats[p.cat] || 0) + 1; const m = momentOf(p.time); moms[m] = (moms[m] || 0) + 1; }));
-    $('#synthCats').innerHTML = Object.entries(cats).sort((a, b) => b[1] - a[1]).map(([k, n]) => `<li><i style="background:${CATS[k].c}"></i>${esc(CATS[k].n)} · ${n}</li>`).join('');
-    $('#synthMoments').innerHTML = MOMENTS.filter(m => moms[m]).map(m => `<li>${m} · ${moms[m]}</li>`).join('');
+    const multi = cl.filter(c => c.who.size >= 2).sort((a, b) => b.who.size - a.who.size).slice(0, 8);
+    $('#synth').innerHTML = multi.length ? multi.map(c => `<li><b>${c.who.size} élèves</b> · ${esc(Object.entries(c.names).sort((a, b) => b[1] - a[1])[0]?.[0] || 'Lieu sans nom')}</li>`).join('') : '<li class="muted">Aucun lieu cité par plusieurs élèves.</li>';
   }
 
-  $('#classFilter').addEventListener('change', e => { classSel = e.target.value; renderStudents(); });
-  $('#allOn').addEventListener('click', () => { subs.forEach(x => { if (!classSel || x.student.classe === classSel) x.shown = true; }); renderStudents(); });
-  $('#allOff').addEventListener('click', () => { subs.forEach(x => { if (!classSel || x.student.classe === classSel) x.shown = false; }); renderStudents(); });
-
-  function fitAll() {
-    const vs = visibleSubs();
-    if (vs.length) map.fitBounds(L.latLngBounds(vs.flatMap(x => x.points.map(p => [p.lat, p.lng]))), { padding: [40, 40] });
+  /* ---------- projection / admin ---------- */
+  function liveUrl() {
+    const u = new URL('live.html', location.href);
+    u.hash = new URLSearchParams({ u: cfg.url, k: cfg.key, ...(classSel ? { c: classSel } : {}) }).toString();
+    return u.toString();
   }
-  $('#import').addEventListener('change', async e => {
-    const ko = [];
-    for (const f of e.target.files) {
-      try { const j = JSON.parse(await f.text()); (Array.isArray(j) ? j : [j]).forEach(d => { const sub = fromFile(d, f.name); if (sub) addFileSub(sub); }); } catch (_) { ko.push(f.name); }
-    }
-    e.target.value = ''; renderStudents(); fitAll();
-    if (ko.length) alert('Fichier(s) illisible(s) : ' + ko.join(', '));
+  $('#liveBtn').addEventListener('click', () => { if (!cfg.url || !cfg.key) return flash('#status', 'Renseignez d\'abord le serveur et la clé.', false); window.open(liveUrl(), '_blank', 'noopener'); });
+  $('#liveCopy').addEventListener('click', async () => {
+    if (!cfg.url || !cfg.key) return flash('#status', 'Renseignez d\'abord le serveur et la clé.', false);
+    try { await navigator.clipboard.writeText(liveUrl()); flash('#status', 'Lien copié. Il contient la clé enseignant : ne le partagez pas avec les élèves.', true); }
+    catch (_) { prompt('Copiez ce lien (il contient la clé enseignant) :', liveUrl()); }
+  });
+  $('#purge').addEventListener('click', async () => {
+    if (!confirm('Supprimer TOUS les élèves et TOUTES les demandes (toutes classes) ?\nCette action est définitive. La liste des classes est conservée.')) return;
+    const r = await admin('purge'); if (!r.ok) return flash('#status', r.error, false);
+    detId = null; flash('#status', 'Élèves et demandes supprimés.', true); refresh();
   });
 
-  // ---- serveur de classe (Google Apps Script, voir collecte-google.gs)
-  function loadCfg() { try { const d = JSON.parse(localStorage.getItem(CKEY) || 'null'); if (d) cfg = d; } catch (_) {} }
-  $('#cfgBtn').addEventListener('click', () => {
-    const url = prompt('Adresse du serveur de classe (URL se terminant par /exec) :', cfg.url || '');
-    if (url === null) return;
-    const key = prompt('Clé enseignant (la même que dans le script) :', cfg.key || '');
-    if (key === null) return;
-    cfg = { url: url.trim(), key: key.trim() };
-    try { localStorage.setItem(CKEY, JSON.stringify(cfg)); } catch (_) {}
-  });
-  async function admin(action, extra) {
-    try {
-      const r = await (await fetch(cfg.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action, key: cfg.key }, extra)) })).json();
-      if (!r.ok) { alert(r.error || 'Action refusée.'); return false; } return true;
-    } catch (_) { alert('Connexion au serveur impossible.'); return false; }
-  }
-  async function refresh(silent) {
-    if (!cfg.url) { if (silent) return; $('#cfgBtn').click(); if (!cfg.url) return; }
-    const b = $('#fetchBtn'); if (!silent) { b.disabled = true; b.textContent = 'Récupération…'; }
-    try {
-      const r = await (await fetch(cfg.url + (cfg.url.includes('?') ? '&' : '?') + 'action=all&key=' + encodeURIComponent(cfg.key))).json();
-      if (!r.ok || !Array.isArray(r.students)) throw new Error(r.error || 'réponse inattendue');
-      ingest(r.students); renderStudents();
-      if (firstFit) { firstFit = false; fitAll(); }
-    } catch (err) { if (!silent) alert('Impossible de récupérer les données (adresse, clé ou connexion). ' + (err.message || '')); }
-    finally { if (!silent) { b.disabled = false; b.textContent = 'Récupérer les envois'; } }
-  }
-  $('#fetchBtn').addEventListener('click', () => refresh(false));
-  $('#auto').addEventListener('change', e => {
-    if (autoTimer) { clearInterval(autoTimer); autoTimer = null; }
-    if (e.target.checked) { refresh(true); autoTimer = setInterval(() => refresh(true), 15000); }
-  });
-  (function initStudents() {
-    loadCfg();
-    try { const d = JSON.parse(localStorage.getItem(SKEY) || '[]'); if (Array.isArray(d)) subs = d.filter(x => x && x.student && Array.isArray(x.points)); } catch (_) {}
-    renderStudents();
-  })();
-
-  // ---------- démarrage ----------
-  load();
-  $('#student').value = S.student; $('#start').value = S.start;
-  render();
-  if (S.points.length > 1) map.fitBounds(L.latLngBounds(S.points.map(p => [p.lat, p.lng])), { padding: [60, 60] });
+  setAuto();
+  if (cfg.url && cfg.key) refresh(); else renderAll();
 })();
 </script>
 </body>

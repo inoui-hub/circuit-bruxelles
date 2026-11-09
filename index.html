@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Mon itinéraire à Bruxelles</title>
+<title>Itinéraires à Bruxelles</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
   :root{
     --ink:#1f2933; --bg:#e9ecef; --card:#fff; --muted:#5f6b76; --accent:#1f4e6b; --accent-ink:#fff;
-    --border:#cfd5db; --danger:#b3261e; --ok:#1d6b3a;
+    --border:#cfd5db; --danger:#b3261e; --ok:#1d6b3a; --green:#1fa34a;
   }
   @media (prefers-color-scheme: dark){
-    :root{ --ink:#e8eaed; --bg:#14171a; --card:#1d2125; --muted:#9aa5b1; --border:#343b42; --accent:#8bb8d4; --accent-ink:#0e1215; --danger:#f2a29d; --ok:#8fd4a5; }
+    :root{ --ink:#e8eaed; --bg:#14171a; --card:#1d2125; --muted:#9aa5b1; --border:#343b42; --accent:#8bb8d4; --accent-ink:#0e1215; --danger:#f2a29d; --ok:#8fd4a5; --green:#3ddc6e; }
   }
   *{box-sizing:border-box}
   html,body{margin:0}
@@ -42,16 +42,50 @@
 
   .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
   .card h2{margin:0 0 10px;font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-  .top{margin:14px 0 0;max-width:640px}
-  .g3{display:grid;gap:8px;grid-template-columns:1fr 1fr 90px}
   .g2{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+  .g3{display:grid;gap:8px;grid-template-columns:1fr 1fr}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .muted{color:var(--muted);font-size:.88rem;line-height:1.5}
 
-  .tabs{display:flex;gap:6px;margin:16px 0 12px;flex-wrap:wrap}
+  /* connexion */
+  .top{max-width:640px;margin:14px 0 0}
+  .classes{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+  .classes label{display:flex;align-items:center;gap:8px;margin:0;padding:9px 14px;border:1px solid var(--border);border-radius:999px;font-size:.95rem;font-weight:650;color:var(--ink);cursor:pointer;background:var(--bg)}
+  .classes label.on{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+  .classes input{accent-color:var(--accent)}
+  .bar-me{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 0}
+  .me-name{font-weight:700}
+
+  /* disposition connectée */
+  .layout{display:grid;gap:16px;grid-template-columns:1fr;margin-top:14px}
+  @media (min-width:1000px){ .layout{grid-template-columns:minmax(0,1fr) 250px;align-items:start} .presence{position:sticky;top:12px} }
+  .presence h2{display:flex;justify-content:space-between;gap:8px}
+  ul.who{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:360px;overflow:auto}
+  ul.who li{display:flex;align-items:center;gap:8px;font-size:.92rem;padding:4px 2px}
+  ul.who li.off{color:var(--muted)}
+  .led{flex:none;width:11px;height:11px;border-radius:50%;background:#b8c0c8}
+  li:not(.off) > .led{background:var(--green);box-shadow:0 0 0 3px color-mix(in srgb,var(--green) 28%,transparent)}
+  ul.who li.me b{font-weight:700}
+
+  .tabs{display:flex;gap:6px;margin:0 0 12px;flex-wrap:wrap}
   .tabs button{border-radius:8px;min-height:42px;font-weight:600}
   .tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
   .dot{color:#d1495b;margin-left:4px}
+
+  /* demandes */
+  .search{display:flex;gap:8px;align-items:stretch}
+  .search input{border-radius:999px;padding:10px 16px;font-size:1rem}
+  .search button{border-radius:999px}
+  ul.reqs{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  ul.reqs li{display:grid;gap:6px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--card)}
+  ul.reqs li.mine{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
+  .q{font-size:1.08rem;font-weight:650}
+  .q::before{content:"⌕ ";color:var(--muted)}
+  .req-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.84rem;color:var(--muted)}
+  .tag{font-size:.72rem;font-weight:700;border:1px solid var(--border);border-radius:999px;padding:1px 9px;color:var(--muted)}
+  .tag.free{color:var(--ok);border-color:var(--ok)}
+  .banner{padding:12px 14px;border-radius:10px;background:color-mix(in srgb,var(--accent) 14%,transparent);border:1px solid var(--accent);margin:0 0 12px;line-height:1.5}
+  .banner .q{display:inline}
 
   .meta{margin:0 0 12px}
   .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin:0 0 12px}
@@ -61,8 +95,8 @@
   .results li:hover{background:var(--bg)}
 
   .app{display:grid;gap:16px;grid-template-columns:1fr}
-  @media (min-width:1000px){ .app{grid-template-columns:minmax(0,1fr) 440px} }
-  #map,#rmap{height:70vh;min-height:440px;border:2px solid #2e3e4c;border-radius:10px;z-index:0}
+  @media (min-width:1100px){ .app{grid-template-columns:minmax(0,1fr) 400px} }
+  #map,#rmap{height:68vh;min-height:420px;border:2px solid #2e3e4c;border-radius:10px;z-index:0}
   #map.adding{cursor:crosshair}
   .hintbar{margin:8px 0 0;font-size:.88rem;color:var(--muted)}
   .side{display:grid;gap:12px;align-content:start}
@@ -79,16 +113,11 @@
   .status{padding:10px 12px;border-radius:8px;font-size:.92rem;line-height:1.5;margin-top:10px}
   .status.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);border:1px solid var(--ok)}
   .status.err{background:color-mix(in srgb,var(--danger) 14%,transparent);color:var(--danger);border:1px solid var(--danger)}
-
-  ul.mates{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:6px;max-height:260px;overflow:auto}
-  ul.mates label{display:flex;align-items:center;gap:8px;margin:0;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:.95rem;font-weight:550;color:var(--ink);cursor:pointer}
-  ul.mates label.off{opacity:.5;cursor:not-allowed;background:var(--bg)}
-  ul.mates label.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}
-  .tag{margin-left:auto;font-size:.72rem;font-weight:700;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:1px 8px}
+  .saved{font-size:.78rem;color:var(--muted)}
 
   /* Feuille de route */
   .rgrid{display:grid;gap:16px;grid-template-columns:1fr;margin-top:12px}
-  @media (min-width:1000px){ .rgrid{grid-template-columns:minmax(0,1fr) 460px} }
+  @media (min-width:1000px){ .rgrid{grid-template-columns:minmax(0,1fr) 440px} }
   .rhead h2{font-size:1.3rem;letter-spacing:0;text-transform:none;color:var(--ink);margin:0 0 4px}
   ol.steps{list-style:none;margin:0;padding:0}
   li.step{display:grid;grid-template-columns:34px 1fr;gap:10px;padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--card)}
@@ -99,6 +128,15 @@
   .step blockquote{margin:8px 0 0;padding:6px 10px;border-left:3px solid var(--accent);background:var(--bg);border-radius:0 6px 6px 0;font-size:.93rem;line-height:1.5}
   li.walk{margin:6px 0 6px 16px;color:var(--muted);font-size:.86rem}
 
+  /* évaluation */
+  .crit{border:1px solid var(--border);border-radius:10px;padding:12px;margin:0 0 10px;background:var(--card)}
+  .crit p{margin:0 0 8px;font-weight:650}
+  .scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+  .scale label{margin:0;text-align:center;padding:8px 2px;border:1px solid var(--border);border-radius:8px;cursor:pointer;color:var(--ink);font-size:.95rem;font-weight:700;background:var(--bg)}
+  .scale label.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  .scale input{position:absolute;opacity:0;pointer-events:none}
+  .scale small{display:block;font-weight:500;font-size:.66rem;opacity:.85;line-height:1.2}
+
   .pin{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.45)}
   .pin span{transform:rotate(45deg);color:#fff;font-weight:800;font-size:13px}
   .pin.sel{box-shadow:0 0 0 3px #1f4e6b,0 2px 8px rgba(0,0,0,.5)}
@@ -106,7 +144,7 @@
 
   @media print{
     body{background:#fff;padding:0}
-    body.print-recu header,body.print-recu .top,body.print-recu .tabs,body.print-recu #viewMine,body.print-recu .noprint{display:none!important}
+    body.print-recu header,body.print-recu .top,body.print-recu .tabs,body.print-recu .presence,body.print-recu .noprint,body.print-recu .bar-me{display:none!important}
     #rmap{height:340px;min-height:0}
     li.step{break-inside:avoid}
   }
@@ -116,107 +154,155 @@
 <div class="wrap">
 
   <header>
-    <p class="eyebrow">Atelier · itinéraire à Bruxelles</p>
-    <h1>Votre journée idéale à Bruxelles</h1>
-    <p class="consigne">Imaginez que <b>vous accueillez un ami</b> pour une journée à Bruxelles. Quels sont <b>les lieux à voir absolument</b>, <b>dans quel ordre</b> et <b>à quelle heure</b> ? Café du matin, musée, balade, soirée… tout ce que vous jugez digne de votre itinéraire. Envoyez-le à votre professeur, puis à un camarade, et découvrez celui qu'un camarade a préparé pour vous.</p>
+    <p class="eyebrow">Atelier · itinéraires à Bruxelles</p>
+    <h1>Un itinéraire sur demande</h1>
+    <p class="consigne"><b>Vous formulez une demande</b> en quelques mots-clés, comme dans une barre de recherche. <b>Un camarade</b> construit l'itinéraire qui y répond ; <b>vous en construisez un</b> pour la demande d'un autre. Puis chacun <b>évalue</b> ce qu'il reçoit.</p>
   </header>
 
-  <section class="card top" id="meCard">
-    <h2>1 · Vous</h2>
+  <!-- ===== Connexion ===== -->
+  <section class="card top" id="loginCard">
+    <h2>Connexion</h2>
     <div class="g3">
       <div><label for="prenom">Prénom *</label><input id="prenom" maxlength="40" autocomplete="given-name"></div>
       <div><label for="nom">Nom *</label><input id="nom" maxlength="40" autocomplete="family-name"></div>
-      <div><label for="classe">Classe *</label><input id="classe" maxlength="12" placeholder="ex. 6B"></div>
     </div>
-    <div class="row" style="margin-top:10px" id="connRow">
-      <button id="connect" class="primary">Me connecter à la classe</button>
-      <button id="logout" hidden>Changer d'élève</button>
-      <span class="muted" id="connState"></span>
+    <div style="margin-top:12px">
+      <label id="classeLbl">Ma classe * (cochez-la)</label>
+      <div class="classes" id="classes" role="radiogroup" aria-labelledby="classeLbl"></div>
+      <p class="muted" id="classesHelp"></p>
     </div>
+    <div class="row" style="margin-top:10px">
+      <button id="connect" class="primary">Me connecter</button>
+    </div>
+    <div id="loginStatus" class="status err" hidden role="status"></div>
   </section>
 
-  <div class="tabs" id="tabs" hidden role="tablist">
-    <button data-v="mine" aria-selected="true" role="tab">Mon itinéraire</button>
-    <button data-v="recu" aria-selected="false" role="tab">Itinéraire reçu<span class="dot" id="dot" hidden>●</span></button>
+  <div class="bar-me" id="meBar" hidden>
+    <span class="me-name" id="meName"></span>
+    <button id="logout">Changer d'élève</button>
   </div>
 
-  <!-- ===== Vue 1 : construire mon itinéraire ===== -->
-  <div id="viewMine">
-    <section class="card meta">
-      <h2>2 · Votre itinéraire</h2>
-      <div class="g2">
-        <div><label for="titre">Titre de la journée</label><input id="titre" maxlength="80" placeholder="Ex. : Bruxelles côté café et art nouveau"></div>
-        <div><label for="pour">Pour qui ?</label><input id="pour" maxlength="80" placeholder="Ex. : un ami qui aime la photo"></div>
-      </div>
-      <div class="field" style="margin-top:8px"><label for="intro">Un mot pour présenter cette journée</label><input id="intro" maxlength="200" placeholder="Ex. : Une journée tranquille, à faire à pied."></div>
-    </section>
-
-    <div class="app">
-      <div>
-        <div class="bar">
-          <div class="grow">
-            <label for="q">3 · Chercher un lieu</label>
-            <input id="q" type="search" placeholder="Ex. : Atomium, Grand-Place, un café…" autocomplete="off">
-            <ul class="results" id="results" hidden></ul>
-          </div>
-          <button id="addBtn" class="primary" aria-pressed="false">Placer un point sur la carte</button>
-        </div>
-        <div id="map" aria-label="Carte de Bruxelles"></div>
-        <p class="hintbar" id="hint"></p>
+  <!-- ===== Application ===== -->
+  <div class="layout" id="appBox" hidden>
+    <main>
+      <div class="tabs" id="tabs" role="tablist">
+        <button data-v="req" aria-selected="true" role="tab">1 · Ma demande</button>
+        <button data-v="list" aria-selected="false" role="tab">2 · Demandes de la classe</button>
+        <button data-v="build" aria-selected="false" role="tab">3 · Construire un itinéraire<span class="dot" id="dotBuild" hidden>●</span></button>
+        <button data-v="recu" aria-selected="false" role="tab">4 · Itinéraire reçu<span class="dot" id="dotRecu" hidden>●</span></button>
       </div>
 
-      <aside class="side">
+      <!-- Vue 1 : ma demande -->
+      <div id="vReq">
         <section class="card">
-          <h2>Mes points <span id="cnt"></span></h2>
-          <div id="list"></div>
-          <p class="muted" id="empty">Aucun point pour l'instant. Cherchez un lieu ou cliquez sur « Placer un point », puis sur la carte.</p>
-          <p class="muted" id="orderHint" hidden>Les points sont classés automatiquement par heure : changez l'heure pour changer l'ordre.</p>
+          <h2>Ma demande</h2>
+          <p class="muted">Quel itinéraire à Bruxelles aimeriez-vous recevoir ? Écrivez <b>des mots-clés</b> (8 mots maximum), pas une phrase.</p>
+          <form class="search" id="reqForm" autocomplete="off">
+            <input id="reqText" maxlength="100" placeholder="ex. : café calme, art nouveau, gratuit" aria-label="Ma demande en mots-clés">
+            <button class="primary" id="reqBtn" type="submit">Envoyer ma demande</button>
+          </form>
+          <div id="reqState" class="muted" style="margin-top:12px"></div>
+          <div class="row" style="margin-top:8px"><button id="reqDel" hidden>Retirer ma demande</button></div>
+          <div id="reqStatus" class="status" hidden role="status"></div>
         </section>
+      </div>
 
+      <!-- Vue 2 : demandes de la classe -->
+      <div id="vList" hidden>
         <section class="card">
-          <h2>4 · Envoyer</h2>
-          <p class="muted" id="sendHelp"></p>
-          <div class="row">
-            <button id="send" class="primary">Envoyer au professeur</button>
-            <button id="dl">Télécharger ma copie</button>
-          </div>
-          <div id="mateBox" hidden>
-            <h3>Envoyer à un camarade</h3>
-            <p class="muted" id="mateHelp">Choisissez un camarade de votre classe. Un camarade déjà choisi par quelqu'un d'autre n'est plus disponible. L'envoi est définitif : vous ne pourrez plus modifier votre itinéraire.</p>
-            <ul class="mates" id="mates"></ul>
-            <div class="row">
-              <button id="refreshMates">Actualiser la liste</button>
-              <button id="sendMate" class="primary" disabled>Envoyer à un camarade</button>
+          <h2>Demandes de la classe <span id="listCnt"></span></h2>
+          <p class="muted" id="listHelp"></p>
+          <ul class="reqs" id="reqs"></ul>
+          <div id="listStatus" class="status err" hidden role="status"></div>
+        </section>
+      </div>
+
+      <!-- Vue 3 : construire -->
+      <div id="vBuild" hidden>
+        <section class="card" id="buildEmpty">
+          <h2>Construire un itinéraire</h2>
+          <p class="muted">Vous n'avez pas encore choisi de demande. Allez dans « Demandes de la classe », choisissez celle d'un camarade, puis revenez ici pour construire l'itinéraire.</p>
+          <button id="goList" class="primary">Voir les demandes</button>
+        </section>
+        <div id="buildBox" hidden>
+          <div class="banner">Demande de <b id="bAuthor"></b> : <span class="q" id="bText"></span></div>
+          <section class="card meta">
+            <label for="intro">Un mot pour présenter cet itinéraire (facultatif)</label>
+            <input id="intro" maxlength="200" placeholder="Ex. : Une journée tranquille, à faire à pied.">
+          </section>
+          <div class="app">
+            <div>
+              <div class="bar">
+                <div class="grow">
+                  <label for="q">Chercher un lieu</label>
+                  <input id="q" type="search" placeholder="Ex. : Atomium, Grand-Place, un café…" autocomplete="off">
+                  <ul class="results" id="results" hidden></ul>
+                </div>
+                <button id="addBtn" class="primary" aria-pressed="false">Placer un point sur la carte</button>
+              </div>
+              <div id="map" aria-label="Carte de Bruxelles"></div>
+              <p class="hintbar" id="hint"></p>
             </div>
+            <aside class="side">
+              <section class="card">
+                <h2>Points de l'itinéraire <span id="cnt"></span></h2>
+                <div id="list"></div>
+                <p class="muted" id="empty">Aucun point pour l'instant. Cherchez un lieu ou cliquez sur « Placer un point », puis sur la carte.</p>
+                <p class="muted" id="orderHint" hidden>Les points sont classés par heure : changez l'heure pour changer l'ordre.</p>
+              </section>
+              <section class="card">
+                <h2>Renvoyer l'itinéraire</h2>
+                <p class="muted" id="sendHelp"></p>
+                <div class="row">
+                  <button id="send" class="primary">Envoyer</button>
+                  <button id="giveUp">Choisir une autre demande</button>
+                </div>
+                <p class="saved" id="saved"></p>
+                <div id="sentBox" class="status ok" hidden></div>
+                <div id="status" class="status" hidden role="status"></div>
+              </section>
+            </aside>
           </div>
-          <div id="sentBox" class="status ok" hidden></div>
-          <div id="status" class="status" hidden role="status"></div>
-        </section>
-      </aside>
-    </div>
-  </div>
-
-  <!-- ===== Vue 2 : feuille de route reçue ===== -->
-  <div id="viewRecu" hidden>
-    <section class="card" id="recuEmpty">
-      <h2>Itinéraire reçu</h2>
-      <p class="muted">Personne ne vous a encore envoyé d'itinéraire. Cette page se met à jour toute seule : dès qu'un camarade vous choisit, sa feuille de route apparaît ici.</p>
-    </section>
-    <div id="recuBox" hidden>
-      <section class="card rhead">
-        <h2 id="rTitre"></h2>
-        <p class="muted" id="rMeta"></p>
-        <p id="rIntro" style="margin:6px 0 10px"></p>
-        <div class="row noprint">
-          <a class="btn" id="gmaps" target="_blank" rel="noopener noreferrer">Ouvrir dans Google Maps</a>
-          <button id="printBtn">Imprimer la feuille de route</button>
         </div>
-      </section>
-      <div class="rgrid">
-        <div id="rmap" aria-label="Carte de l'itinéraire reçu"></div>
-        <ol class="steps" id="steps"></ol>
       </div>
-    </div>
+
+      <!-- Vue 4 : reçu + évaluation -->
+      <div id="vRecu" hidden>
+        <section class="card" id="recuEmpty">
+          <h2>Itinéraire reçu</h2>
+          <p class="muted" id="recuEmptyTxt"></p>
+        </section>
+        <div id="recuBox" hidden>
+          <section class="card rhead">
+            <h2 id="rTitre"></h2>
+            <p class="muted" id="rMeta"></p>
+            <p id="rIntro" style="margin:6px 0 10px"></p>
+            <div class="row noprint">
+              <a class="btn" id="gmaps" target="_blank" rel="noopener noreferrer">Ouvrir dans Google Maps</a>
+              <button id="printBtn">Imprimer la feuille de route</button>
+            </div>
+          </section>
+          <div class="rgrid">
+            <div id="rmap" aria-label="Carte de l'itinéraire reçu"></div>
+            <ol class="steps" id="steps"></ol>
+          </div>
+          <section class="card noprint" style="margin-top:16px" id="evalCard">
+            <h2>Mon évaluation</h2>
+            <p class="muted">Cet itinéraire répond-il à votre demande ? <b>1 = pas du tout · 5 = parfaitement</b></p>
+            <div id="crits"></div>
+            <label for="evComment">Un commentaire pour votre camarade (facultatif)</label>
+            <textarea id="evComment" maxlength="400" placeholder="Ce qui vous a plu, ce qui manquait…"></textarea>
+            <div class="row" style="margin-top:10px"><button id="evSend" class="primary">Envoyer mon évaluation</button></div>
+            <div id="evStatus" class="status" hidden role="status"></div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <aside class="card presence" aria-label="Élèves de la classe">
+      <h2><span>Dans la classe</span><span id="onCnt"></span></h2>
+      <ul class="who" id="who"></ul>
+    </aside>
   </div>
 </div>
 
@@ -224,8 +310,7 @@
 <script>
 (() => {
   /* ============ À RÉGLER PAR L'ENSEIGNANT ============
-     ENDPOINT : adresse du serveur de classe (voir collecte-google.gs, URL se terminant par /exec).
-     Laissez vide pour un fonctionnement sans serveur : l'élève télécharge un fichier à vous transmettre. */
+     ENDPOINT : adresse du serveur de classe (voir collecte-google.gs, URL se terminant par /exec). */
   const ENDPOINT = 'https://script.google.com/macros/s/AKfycbws5i5VCuJP2EnADxLkmVSIuB07KvUj1fOfmTQmKLWv-QFBx12-Ddiff47M5sQz-INj/exec';
   const MAX = 6;
 
@@ -242,15 +327,23 @@
     autre:  { n:'Autre',                      c:'#777777' },
   };
   const DURS = [15,30,45,60,75,90,120,150,180,240];
-  const KEY = 'itineraire-eleve-v2';
-  const POLL_MS = 7000;
+  const CRITS = [
+    ['c1', 'A-t-on compris exactement votre demande ?'],
+    ['c2', 'L\'itinéraire restitue-t-il ce que vous désirez ?'],
+    ['c3', 'Les lieux sont-ils ordonnés selon vos besoins ?'],
+  ];
+  const SCALE = ['Pas du tout', 'Peu', 'Moyen', 'Bien', 'Parfait'];
+  const KEY = 'itineraire-eleve-v3';
+  const POLL_MS = 8000;
   const $ = s => document.querySelector(s);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  let S = { prenom:'', nom:'', classe:'', titre:'', pour:'', intro:'', points:[], me:null };
-  let sentTo = null, received = null, receivedSig = '', mates = [], chosenMate = null, view = 'mine';
-  let selected = null, adding = false, uid = 0, pollTimer = null;
-  const markers = {}; let routeLine = null;
+  let S = { prenom: '', nom: '', classe: '', me: null, taskId: '', intro: '', points: [] };
+  let st = null;             // dernier état reçu du serveur
+  let view = 'req', pollTimer = null, saveTimer = null, uid = 0, selected = null, adding = false;
+  let sigReqs = '', sigMine = '', sigTask = '', seenReceived = false, ev = { c1: 0, c2: 0, c3: 0 }, evDirty = false;
+  let map = null, rmap = null, rLayer = null, routeLine = null;
+  const markers = {};
 
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} };
   function load() {
@@ -278,40 +371,182 @@
   const label = p => p.name || 'Point sans nom';
   const catOf = c => CATS[c] || CATS.autre;
 
-  /* ---------- appels au serveur ---------- */
+  /* ---------- serveur ---------- */
   async function api(action, extra = {}) {
     try {
       const r = await fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(Object.assign({ action }, extra)) });
       return await r.json();
     } catch (_) { return { ok: false, error: 'Connexion impossible. Vérifiez votre réseau et réessayez.' }; }
   }
-  async function apiGet(params) {
-    try { return await (await fetch(ENDPOINT + (ENDPOINT.includes('?') ? '&' : '?') + new URLSearchParams(params))).json(); }
-    catch (_) { return { ok: false, error: 'Connexion impossible.' }; }
+  const auth = () => ({ id: S.me.id, token: S.me.token });
+  const call = (action, extra = {}) => api(action, Object.assign(auth(), extra));
+  function flash(sel, msg, ok) { const s = $(sel); s.hidden = !msg; s.className = 'status ' + (ok ? 'ok' : 'err'); s.textContent = msg || ''; }
+
+  /* ---------- connexion ---------- */
+  let classesList = [];
+  async function loadClasses() {
+    const r = await api('classes');
+    classesList = r.ok ? r.classes : [];
+    const box = $('#classes'); box.innerHTML = '';
+    classesList.forEach(c => {
+      const l = document.createElement('label');
+      l.innerHTML = `<input type="radio" name="cl" value="${esc(c)}" ${S.classe === c ? 'checked' : ''}> ${esc(c)}`;
+      l.querySelector('input').addEventListener('change', () => { S.classe = c; save(); markClasse(); });
+      box.appendChild(l);
+    });
+    markClasse();
+    $('#classesHelp').textContent = !r.ok ? 'Liste des classes indisponible : vérifiez votre réseau.'
+      : !classesList.length ? 'Aucune classe n\'est ouverte pour le moment : demandez à votre professeur.' : '';
+  }
+  function markClasse() { document.querySelectorAll('#classes label').forEach(l => l.classList.toggle('on', l.querySelector('input').checked)); }
+
+  async function connect() {
+    const bad = k => { const b = !S[k].trim(); $('#' + k).classList.toggle('bad', b); return b; };
+    const b1 = bad('prenom'), b2 = bad('nom');
+    if (b1 || b2 || !S.classe) { flash('#loginStatus', 'Renseignez votre prénom, votre nom et cochez votre classe.', false); return; }
+    $('#connect').disabled = true;
+    const r = await api('join', { nom: S.nom, prenom: S.prenom, classe: S.classe });
+    $('#connect').disabled = false;
+    if (!r.ok) { flash('#loginStatus', r.error, false); return; }
+    flash('#loginStatus', '', true);
+    S.me = r.me; save(); enterApp();
+  }
+  function enterApp() {
+    $('#loginCard').hidden = true; $('#meBar').hidden = false; $('#appBox').hidden = false;
+    $('#meName').textContent = `${S.me.prenom} ${S.me.nom} · ${S.me.classe}`;
+    showView(view); poll(); clearInterval(pollTimer); pollTimer = setInterval(poll, POLL_MS);
+  }
+  function logout() {
+    if (!confirm('Changer d\'élève ? Les points non envoyés sur cet appareil seront effacés.')) return;
+    clearInterval(pollTimer); S = { prenom: '', nom: '', classe: '', me: null, taskId: '', intro: '', points: [] };
+    st = null; sigReqs = sigMine = sigTask = ''; seenReceived = false; ev = { c1: 0, c2: 0, c3: 0 }; evDirty = false; selected = null;
+    save(); ['prenom', 'nom'].forEach(k => $('#' + k).value = '');
+    $('#loginCard').hidden = false; $('#meBar').hidden = true; $('#appBox').hidden = true; view = 'req';
+    loadClasses();
+  }
+  ['prenom', 'nom'].forEach(k => $('#' + k).addEventListener('input', e => { S[k] = e.target.value; e.target.classList.remove('bad'); save(); }));
+  $('#connect').addEventListener('click', connect);
+  $('#logout').addEventListener('click', logout);
+
+  /* ---------- relève de l'état ---------- */
+  async function poll() {
+    if (!S.me) return;
+    const r = await call('state');
+    if (!r.ok) {
+      if (/Session invalide/.test(r.error || '')) { clearInterval(pollTimer); S.me = null; save(); $('#appBox').hidden = true; $('#meBar').hidden = true; $('#loginCard').hidden = false; flash('#loginStatus', 'Votre session a expiré : reconnectez-vous.', false); loadClasses(); }
+      return;
+    }
+    st = r; applyState();
+  }
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && S.me) poll(); });
+
+  function applyState() {
+    renderPresence();
+    const sr = JSON.stringify(st.requests.map(q => [q.id, q.text, q.status, q.takenBy]));
+    if (sr !== sigReqs) { sigReqs = sr; renderReqs(); }
+    const sm = JSON.stringify(st.mine ? [st.mine.id, st.mine.text, st.mine.status, st.mine.taker, st.mine.received && st.mine.received.sentAt, st.mine.ev] : null);
+    if (sm !== sigMine) { sigMine = sm; renderMine(); }
+    const task = st.task, tsig = task ? task.id + ':' + task.sent : '';
+    if (tsig !== sigTask) {
+      sigTask = tsig;
+      const newTask = task && S.taskId !== task.id;
+      if (newTask) { S.taskId = task.id; S.intro = (task.itin && task.itin.intro) || ''; S.points = ((task.itin && task.itin.points) || []).slice(0, MAX).map(p => Object.assign({ id: 'p' + (++uid) }, p)); selected = null; save(); }
+      if (!task && S.taskId) { S.taskId = ''; S.points = []; S.intro = ''; save(); }
+      renderTask();
+    }
   }
 
-  /* ---------- carte « mon itinéraire » ---------- */
+  /* ---------- présence ---------- */
+  function renderPresence() {
+    const l = st.online.slice().sort((a, b) => (b.online - a.online) || (a.prenom + a.nom).localeCompare(b.prenom + b.nom, 'fr'));
+    $('#onCnt').textContent = `${l.filter(x => x.online).length} en ligne`;
+    $('#who').innerHTML = l.map(p => `<li class="${p.online ? '' : 'off'}${p.id === st.me.id ? ' me' : ''}"><span class="led" aria-hidden="true"></span><span>${p.id === st.me.id ? '<b>' : ''}${esc(p.prenom)} ${esc(p.nom)}${p.id === st.me.id ? ' (moi)</b>' : ''}</span><span class="muted" style="margin-left:auto;font-size:.72rem">${p.online ? 'en ligne' : 'absent'}</span></li>`).join('');
+  }
+
+  /* ---------- onglet 1 : ma demande / onglet 2 : liste ---------- */
+  const wordCount = s => s.trim().split(/\s+/).filter(Boolean).length;
+  $('#reqForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const t = $('#reqText').value.trim();
+    if (t.length < 2) { flash('#reqStatus', 'Écrivez votre demande en quelques mots-clés.', false); return; }
+    if (wordCount(t) > 8 || /[.!?;]\s*\S/.test(t)) { flash('#reqStatus', 'Des mots-clés, pas une phrase : 8 mots maximum, sans ponctuation de phrase.', false); return; }
+    $('#reqBtn').disabled = true;
+    const r = await call('request', { text: t });
+    $('#reqBtn').disabled = false;
+    if (!r.ok) { flash('#reqStatus', r.error, false); return; }
+    flash('#reqStatus', 'Demande enregistrée : toute la classe peut la voir.', true);
+    await poll();
+  });
+  $('#reqDel').addEventListener('click', async () => {
+    if (!confirm('Retirer votre demande ?')) return;
+    const r = await call('delrequest'); if (!r.ok) { flash('#reqStatus', r.error, false); return; }
+    $('#reqText').value = ''; flash('#reqStatus', '', true); await poll();
+  });
+  function renderMine() {
+    const m = st.mine, box = $('#reqState');
+    $('#reqBtn').textContent = m ? 'Modifier ma demande' : 'Envoyer ma demande';
+    const taken = m && m.status !== 'free';
+    $('#reqText').disabled = taken; $('#reqBtn').disabled = taken; $('#reqDel').hidden = !m || taken;
+    if (m && document.activeElement !== $('#reqText')) $('#reqText').value = m.text;
+    box.innerHTML = !m ? 'Vous n\'avez pas encore fait de demande.'
+      : m.status === 'free' ? `<span class="tag free">En attente</span> Votre demande est visible de la classe ; personne ne l'a encore choisie.`
+      : m.status === 'taken' ? `<span class="tag">En cours</span> <b>${esc(m.taker)}</b> construit votre itinéraire.`
+      : `<span class="tag free">Reçu</span> <b>${esc(m.taker)}</b> vous a renvoyé un itinéraire : voyez l'onglet 4.`;
+    renderRecu();
+    renderReqs();
+  }
+  function renderReqs() {
+    const qs = st.requests, hasTask = !!st.task;
+    $('#listCnt').textContent = `(${qs.length})`;
+    $('#listHelp').textContent = hasTask ? 'Vous avez déjà choisi une demande : construisez-la dans l\'onglet 3.'
+      : qs.length ? 'Choisissez la demande à laquelle vous voulez répondre. Une demande ne peut être choisie que par un seul élève.' : 'Aucune demande pour l\'instant.';
+    const ul = $('#reqs'); ul.innerHTML = '';
+    qs.forEach(q => {
+      const mine = q.authorId === st.me.id, li = document.createElement('li');
+      li.className = mine ? 'mine' : '';
+      const tag = q.status === 'free' ? '<span class="tag free">Libre</span>' : q.status === 'taken' ? `<span class="tag">Choisie par ${esc(q.taker)}</span>` : `<span class="tag">Itinéraire envoyé</span>`;
+      li.innerHTML = `<div class="q">${esc(q.text)}</div><div class="req-meta"><span>${mine ? 'Ma demande' : esc(q.author)}</span>${tag}</div>`;
+      if (!mine && q.status === 'free' && !hasTask) {
+        const b = document.createElement('button'); b.className = 'primary'; b.textContent = 'Je construis cet itinéraire';
+        b.onclick = () => takeReq(q, b); li.appendChild(b);
+      }
+      if (q.takenBy === st.me.id) { const s = document.createElement('div'); s.className = 'req-meta'; s.innerHTML = '<b>C\'est celle que vous construisez.</b>'; li.appendChild(s); }
+      ul.appendChild(li);
+    });
+  }
+  async function takeReq(q, btn) {
+    if (!confirm(`Construire l'itinéraire pour « ${q.text} » (${q.author}) ?\nVous ne pourrez choisir qu'une seule demande.`)) return;
+    btn.disabled = true;
+    const r = await call('take', { requestId: q.id });
+    if (!r.ok) { flash('#listStatus', r.error, false); await poll(); return; }
+    flash('#listStatus', '', true); await poll(); showView('build');
+  }
+  $('#goList').addEventListener('click', () => showView('list'));
+
+  /* ---------- onglet 3 : construire ---------- */
+  const locked = () => !!(st && st.task && st.task.sent);
   const mkMap = id => {
     const m = L.map(id, { minZoom: 11, maxBounds: [[50.70, 4.10], [51.02, 4.62]], maxBoundsViscosity: .8 }).setView([50.8467, 4.3525], 13);
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(m);
     L.control.scale({ metric: true, imperial: false }).addTo(m);
     return m;
   };
-  const map = mkMap('map');
-
-  const locked = () => !!sentTo;
+  function ensureMap() {
+    if (map) return;
+    map = mkMap('map');
+    map.on('click', e => { if (adding) addPoint(e.latlng); });
+  }
   function setAdding(on) {
     adding = on && S.points.length < MAX && !locked();
     $('#addBtn').setAttribute('aria-pressed', adding);
     $('#addBtn').disabled = S.points.length >= MAX || locked();
     $('#map').classList.toggle('adding', adding);
-    $('#hint').textContent = locked() ? 'Votre itinéraire est envoyé : il ne peut plus être modifié.'
+    $('#hint').textContent = locked() ? 'Itinéraire envoyé : il ne peut plus être modifié.'
       : adding ? 'Cliquez à l\'endroit voulu sur la carte.'
       : S.points.length >= MAX ? `Vous avez placé ${MAX} points : supprimez-en un pour en ajouter un autre.`
       : 'Glissez un repère pour l\'ajuster. Maximum ' + MAX + ' points.';
   }
   $('#addBtn').addEventListener('click', () => setAdding(!adding));
-  map.on('click', e => { if (adding) addPoint(e.latlng); });
 
   function nextTime() {
     const ts = S.points.filter(p => toMin(p.time) !== null);
@@ -322,13 +557,12 @@
   function addPoint(ll, pre = {}) {
     if (S.points.length >= MAX || locked()) return;
     const p = { id: 'p' + (++uid), lat: ll.lat, lng: ll.lng, name: pre.name || '', cat: 'autre', time: nextTime(), dur: 60, comment: '' };
-    S.points.push(p); selected = p.id; sortPoints(); save(); render(); setAdding(false);
+    S.points.push(p); selected = p.id; sortPoints(); changed(); renderBuild(); setAdding(false);
   }
   function sortPoints() {
     S.points = S.points.map((p, i) => [p, i]).sort((a, b) => ((toMin(a[0].time) ?? 9999) - (toMin(b[0].time) ?? 9999)) || a[1] - b[1]).map(x => x[0]);
   }
 
-  /* ---------- recherche (OpenStreetMap / Nominatim) ---------- */
   let searchTimer;
   $('#q').addEventListener('input', e => {
     clearTimeout(searchTimer);
@@ -348,7 +582,7 @@
             ul.hidden = true; $('#q').value = '';
             const ll = L.latLng(+r.lat, +r.lon); map.flyTo(ll, 16);
             const d = document.createElement('div');
-            d.innerHTML = `<b>${esc(r.display_name.split(',')[0])}</b><br><button style="margin-top:6px;min-height:30px;padding:2px 10px">Ajouter à mon itinéraire</button>`;
+            d.innerHTML = `<b>${esc(r.display_name.split(',')[0])}</b><br><button style="margin-top:6px;min-height:30px;padding:2px 10px">Ajouter à l'itinéraire</button>`;
             d.querySelector('button').onclick = () => { addPoint(ll, { name: r.display_name.split(',')[0] }); map.closePopup(); };
             L.popup().setLatLng(ll).setContent(d).openOn(map);
           };
@@ -360,11 +594,11 @@
   });
   document.addEventListener('click', e => { if (!e.target.closest('.grow')) $('#results').hidden = true; });
 
-  /* ---------- rendu des points ---------- */
   const pinIcon = (i, cat, sel) => L.divIcon({ className: '', iconSize: [30, 30], iconAnchor: [15, 30], tooltipAnchor: [14, -18],
     html: `<div class="pin${sel ? ' sel' : ''}" style="background:${catOf(cat).c}"><span>${i + 1}</span></div>` });
 
   function syncMarkers() {
+    if (!map) return;
     const ids = new Set(S.points.map(p => p.id));
     Object.keys(markers).forEach(id => { if (!ids.has(id)) { markers[id].remove(); delete markers[id]; } });
     S.points.forEach((p, i) => {
@@ -373,7 +607,7 @@
         m = L.marker([p.lat, p.lng], { draggable: true, icon: pinIcon(i, p.cat, false), zIndexOffset: 1000 }).addTo(map);
         m.bindTooltip('', { className: 'lt', permanent: true, direction: 'right', offset: [8, 0] });
         m.on('click', () => { selected = p.id; syncCards(); syncMarkers(); document.getElementById('pt-' + p.id)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); });
-        m.on('dragend', () => { const ll = m.getLatLng(); p.lat = ll.lat; p.lng = ll.lng; save(); drawRoute(); });
+        m.on('dragend', () => { const ll = m.getLatLng(); p.lat = ll.lat; p.lng = ll.lng; changed(); drawRoute(); });
         markers[p.id] = m;
       }
       m.setIcon(pinIcon(i, p.cat, p.id === selected));
@@ -382,12 +616,13 @@
     });
   }
   function drawRoute() {
+    if (!map) return;
     if (routeLine) { routeLine.remove(); routeLine = null; }
     if (S.points.length > 1) routeLine = L.polyline(S.points.map(p => [p.lat, p.lng]), { color: '#1f4e6b', weight: 3, opacity: .85, dashArray: '9 7' }).addTo(map);
   }
   const syncCards = () => document.querySelectorAll('.pt').forEach(c => c.classList.toggle('sel', c.dataset.id === selected));
 
-  function render() {
+  function renderBuild() {
     const list = $('#list'); list.innerHTML = '';
     S.points.forEach((p, i) => {
       const d = document.createElement('div');
@@ -404,17 +639,15 @@
         </div>
         <div class="field"><label>Nom du lieu *</label><input data-f="name" maxlength="60" value="${esc(p.name)}" placeholder="Nom du lieu"></div>
         <div class="field"><label>Type de lieu</label><select data-f="cat">${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${k === p.cat ? 'selected' : ''}>${v.n}</option>`).join('')}</select></div>
-        <div class="field"><label>Pourquoi y aller absolument ? Votre conseil</label><textarea data-f="comment" maxlength="500" placeholder="Ce qu'il faut voir, goûter, ressentir… et pourquoi à ce moment de la journée.">${esc(p.comment)}</textarea></div>`;
+        <div class="field"><label>Pourquoi ce lieu répond à la demande ?</label><textarea data-f="comment" maxlength="500" placeholder="Votre conseil : ce qu'il faut voir, goûter, ressentir… et pourquoi à ce moment.">${esc(p.comment)}</textarea></div>`;
       list.appendChild(d);
     });
     $('#empty').hidden = S.points.length > 0;
     $('#orderHint').hidden = S.points.length < 2;
     $('#cnt').textContent = `(${S.points.length}/${MAX})`;
-    applyLock();
-    syncMarkers(); drawRoute(); setAdding(false);
-    const p = S.points.find(q => q.id === selected); if (p) map.panTo([p.lat, p.lng]);
+    applyLock(); syncMarkers(); drawRoute(); setAdding(false);
+    const p = S.points.find(q => q.id === selected); if (p && map) map.panTo([p.lat, p.lng]);
   }
-
   const listEl = $('#list');
   listEl.addEventListener('input', e => {
     const f = e.target.dataset.f; if (!f || f === 'time' || locked()) return;
@@ -423,218 +656,97 @@
     const card = e.target.closest('.pt');
     if (f === 'name') card.querySelector('.pt-title').firstChild.textContent = label(p);
     if (f === 'cat') card.querySelector('.badge').style.background = catOf(p.cat).c;
-    save(); syncMarkers();
+    changed(); syncMarkers();
   });
   listEl.addEventListener('change', e => {
     if (e.target.dataset.f !== 'time' || locked()) return;
     const p = S.points.find(q => q.id === e.target.closest('.pt').dataset.id);
-    p.time = e.target.value; selected = p.id; sortPoints(); save(); render();
+    p.time = e.target.value; selected = p.id; sortPoints(); changed(); renderBuild();
   });
   listEl.addEventListener('click', e => {
     const card = e.target.closest('.pt'); if (!card) return;
     const id = card.dataset.id;
     if (e.target.closest('button')?.dataset.act === 'del') {
       if (locked() || !confirm('Supprimer ce point ?')) return;
-      S.points = S.points.filter(q => q.id !== id); if (selected === id) selected = null; save(); render(); return;
+      S.points = S.points.filter(q => q.id !== id); if (selected === id) selected = null; changed(); renderBuild(); return;
     }
-    if (selected !== id) { selected = id; syncCards(); syncMarkers(); const p = S.points.find(q => q.id === id); map.panTo([p.lat, p.lng]); }
+    if (selected !== id) { selected = id; syncCards(); syncMarkers(); const p = S.points.find(q => q.id === id); if (map) map.panTo([p.lat, p.lng]); }
   });
+  $('#intro').addEventListener('input', e => { S.intro = e.target.value; changed(); });
 
-  ['prenom', 'nom', 'classe', 'titre', 'pour', 'intro'].forEach(k => {
-    $('#' + k).addEventListener('input', e => { S[k] = e.target.value; e.target.classList.remove('bad'); save(); });
-  });
-
-  /* ---------- verrouillage après envoi à un camarade ---------- */
   function applyLock() {
     const l = locked();
     document.querySelectorAll('#list input,#list select,#list textarea,#list button').forEach(el => el.disabled = l);
-    ['titre', 'pour', 'intro', 'q'].forEach(id => $('#' + id).disabled = l);
-    $('#send').disabled = l;
-    $('#sendMate').disabled = l || !chosenMate;
-    $('#mateBox').hidden = !S.me || !ENDPOINT || l;
-    const sb = $('#sentBox');
-    sb.hidden = !l;
-    if (l) sb.textContent = `Votre itinéraire a été envoyé à ${sentTo.prenom} ${sentTo.nom}. Il ne peut plus être modifié.`;
-    setAdding(false);
-    Object.values(markers).forEach(m => { if (l) m.dragging.disable(); else m.dragging.enable(); });
+    ['intro', 'q'].forEach(id => $('#' + id).disabled = l);
+    $('#send').disabled = l; $('#giveUp').disabled = l;
+    const sb = $('#sentBox'); sb.hidden = !l;
+    if (l && st.task) sb.textContent = `Votre itinéraire a été renvoyé à ${st.task.author}. Il ne peut plus être modifié.`;
+    $('#sendHelp').textContent = l ? '' : `Quand l'itinéraire vous convient (2 points au moins, chacun avec heure et nom), renvoyez-le à ${st.task ? st.task.author : 'son auteur'}. L'envoi est définitif. En attendant, vos points s'affichent en direct sur l'écran de la classe.`;
   }
+  function renderTask() {
+    const t = st.task;
+    $('#buildEmpty').hidden = !!t; $('#buildBox').hidden = !t;
+    $('#dotBuild').hidden = true;
+    if (!t) return;
+    $('#bAuthor').textContent = t.author; $('#bText').textContent = t.text;
+    $('#intro').value = S.intro || '';
+    if (view === 'build') { ensureMap(); setTimeout(() => { map.invalidateSize(); fitPts(); }, 30); }
+    renderBuild();
+  }
+  function fitPts() { if (map && S.points.length > 1) map.fitBounds(L.latLngBounds(S.points.map(p => [p.lat, p.lng])), { padding: [60, 60], maxZoom: 16 }); }
 
-  /* ---------- statut / validation / charge utile ---------- */
-  const status = (msg, ok) => { const s = $('#status'); s.hidden = false; s.className = 'status ' + (ok ? 'ok' : 'err'); s.textContent = msg; };
+  /* brouillon sauvegardé sur le serveur (apparaît en direct sur l'écran de la classe) */
+  function changed() {
+    save();
+    if (!S.me || !st || !st.task || locked()) return;
+    $('#saved').textContent = 'Enregistrement…';
+    clearTimeout(saveTimer); saveTimer = setTimeout(saveDraft, 1200);
+  }
+  async function saveDraft() {
+    if (!st || !st.task || locked()) return;
+    const r = await call('draft', { itin: itinerary() });
+    $('#saved').textContent = r.ok ? 'Brouillon enregistré · ' + new Date().toLocaleTimeString('fr-BE', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : r.error;
+  }
+  function itinerary() {
+    return { intro: S.intro.trim(), points: S.points.map(({ lat, lng, name, cat, time, dur, comment }) => ({ lat, lng, name: name.trim(), cat, time, dur, comment: comment.trim() })) };
+  }
   function validate() {
     const errs = [];
-    ['prenom', 'nom', 'classe'].forEach(k => { const bad = !S[k].trim(); $('#' + k).classList.toggle('bad', bad); if (bad) errs.push(k === 'prenom' ? 'le prénom' : k === 'nom' ? 'le nom' : 'la classe'); });
     if (S.points.length < 2) errs.push('au moins 2 points');
     if (S.points.some(p => !p.name.trim())) errs.push('le nom de chaque lieu');
     if (S.points.some(p => toMin(p.time) === null)) errs.push('l\'heure de chaque point');
     return errs;
   }
-  function itinerary() {
-    return {
-      titre: S.titre.trim(), pour: S.pour.trim(), intro: S.intro.trim(),
-      points: S.points.map(({ lat, lng, name, cat, time, dur, comment }) => ({ lat, lng, name: name.trim(), cat, time, dur, comment: comment.trim() })),
-    };
-  }
-  function download() {
-    const d = Object.assign({ version: 2, sentAt: new Date().toISOString(), student: { prenom: S.prenom.trim(), nom: S.nom.trim(), classe: S.classe.trim() } }, itinerary());
-    const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    const slug = s => s.replace(/[^\p{L}\p{N}_-]+/gu, '-');
-    a.href = URL.createObjectURL(blob); a.download = `itineraire-${slug(d.student.classe)}-${slug(d.student.nom)}-${slug(d.student.prenom)}.json`;
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-  }
-
-  /* ---------- connexion à la classe ---------- */
-  function setConnectedUI() {
-    const on = !!S.me;
-    ['prenom', 'nom', 'classe'].forEach(k => $('#' + k).disabled = on);
-    $('#connect').hidden = on || !ENDPOINT;
-    $('#logout').hidden = !on;
-    $('#tabs').hidden = !on;
-    $('#connState').textContent = !ENDPOINT ? 'Mode sans serveur : vous téléchargerez un fichier à remettre à votre professeur.'
-      : on ? `Connecté : ${S.me.prenom} ${S.me.nom} · ${S.me.classe}` : '';
-    $('#mateBox').hidden = !on || !ENDPOINT || locked();
-    $('#sendHelp').textContent = !ENDPOINT
-      ? 'L\'envoi en ligne n\'est pas activé sur cette page : le bouton télécharge un fichier à transmettre à votre professeur.'
-      : on ? 'Votre professeur reçoit votre itinéraire. Vous pouvez le renvoyer après correction : le dernier envoi remplace le précédent.'
-      : 'Connectez-vous à la classe (étape 1) pour envoyer votre itinéraire.';
-    $('#send').textContent = ENDPOINT ? 'Envoyer au professeur' : 'Télécharger pour le professeur';
-    $('#dl').hidden = !ENDPOINT;
-  }
-  async function connect() {
-    const errs = [];
-    ['prenom', 'nom', 'classe'].forEach(k => { const bad = !S[k].trim(); $('#' + k).classList.toggle('bad', bad); if (bad) errs.push(k); });
-    if (errs.length) { status('Renseignez votre prénom, votre nom et votre classe.', false); return; }
-    $('#connect').disabled = true;
-    const r = await api('join', { nom: S.nom, prenom: S.prenom, classe: S.classe });
-    $('#connect').disabled = false;
-    if (!r.ok) { status(r.error, false); return; }
-    S.me = r.me; sentTo = r.sentTo || null;
-    if (r.itin && !S.points.length) loadItin(r.itin);
-    save(); setConnectedUI(); startPolling(); render(); refreshMates();
-    status('Connecté à la classe. Votre nom apparaît dans la liste de votre professeur.', true);
-  }
-  function loadItin(it) {
-    S.titre = it.titre || ''; S.pour = it.pour || ''; S.intro = it.intro || '';
-    S.points = (it.points || []).slice(0, MAX).map(p => Object.assign({ id: 'p' + (++uid) }, p));
-    ['titre', 'pour', 'intro'].forEach(k => $('#' + k).value = S[k]);
-    sortPoints();
-    if (S.points.length > 1) map.fitBounds(L.latLngBounds(S.points.map(p => [p.lat, p.lng])), { padding: [60, 60] });
-  }
-  function logout() {
-    if (!confirm('Changer d\'élève ? Les points saisis sur cet appareil seront effacés.')) return;
-    stopPolling(); S = { prenom: '', nom: '', classe: '', titre: '', pour: '', intro: '', points: [], me: null };
-    sentTo = null; received = null; receivedSig = ''; mates = []; chosenMate = null; selected = null;
-    ['prenom', 'nom', 'classe', 'titre', 'pour', 'intro'].forEach(k => $('#' + k).value = '');
-    save(); setConnectedUI(); showView('mine'); render(); renderRoadmap(); renderMates(); $('#status').hidden = true;
-  }
-  $('#connect').addEventListener('click', connect);
-  $('#logout').addEventListener('click', logout);
-
-  /* ---------- envois ---------- */
-  async function submitToProf(quiet) {
+  $('#send').addEventListener('click', async () => {
     const errs = validate();
-    if (errs.length) { status('Il manque : ' + errs.join(', ') + '.', false); return false; }
-    if (!ENDPOINT) { download(); status('Fichier téléchargé : transmettez-le à votre professeur.', true); return true; }
-    if (!S.me) { status('Connectez-vous d\'abord à la classe (étape 1).', false); return false; }
-    $('#send').disabled = true;
-    const r = await api('submit', { id: S.me.id, token: S.me.token, itin: itinerary() });
-    applyLock();
-    if (!r.ok) { status(r.error, false); return false; }
-    if (!quiet) status('Itinéraire envoyé à votre professeur.', true);
-    return true;
-  }
-  $('#send').addEventListener('click', () => submitToProf(false));
-  $('#dl').addEventListener('click', () => {
-    const errs = validate();
-    if (errs.length) { status('Il manque : ' + errs.join(', ') + '.', false); return; }
-    download(); status('Copie téléchargée. Conservez ce fichier.', true);
+    if (errs.length) { flash('#status', 'Il manque : ' + errs.join(', ') + '.', false); return; }
+    if (!confirm(`Renvoyer cet itinéraire à ${st.task.author} ?\nL'envoi est définitif : vous ne pourrez plus le modifier.`)) return;
+    clearTimeout(saveTimer); $('#send').disabled = true;
+    const r = await call('send', { itin: itinerary() });
+    if (!r.ok) { flash('#status', r.error, false); $('#send').disabled = false; return; }
+    flash('#status', '', true); await poll();
+  });
+  $('#giveUp').addEventListener('click', async () => {
+    if (!confirm('Abandonner cette demande ? Vos points seront effacés et la demande redeviendra libre.')) return;
+    const r = await call('release'); if (!r.ok) { flash('#status', r.error, false); return; }
+    clearTimeout(saveTimer); S.taskId = ''; S.points = []; S.intro = ''; save(); await poll(); showView('list');
   });
 
-  /* ---------- envoi à un camarade ---------- */
-  async function refreshMates() {
-    if (!S.me || !ENDPOINT) return;
-    const r = await apiGet({ action: 'list', classe: S.me.classe });
-    if (!r.ok) return;
-    mates = r.students.filter(s => s.id !== S.me.id).sort((a, b) => (a.nom + a.prenom).localeCompare(b.nom + b.prenom, 'fr'));
-    if (chosenMate && !mates.some(m => m.id === chosenMate && !m.taken)) chosenMate = null;
-    renderMates();
-  }
-  function renderMates() {
-    const ul = $('#mates'); ul.innerHTML = '';
-    if (!mates.length) ul.innerHTML = '<li class="muted">Aucun autre élève connecté dans votre classe pour l\'instant.</li>';
-    mates.forEach(m => {
-      const li = document.createElement('li');
-      const off = m.taken;
-      li.innerHTML = `<label class="${off ? 'off' : ''}${chosenMate === m.id ? ' on' : ''}"><input type="radio" name="mate" value="${esc(m.id)}" ${off ? 'disabled' : ''} ${chosenMate === m.id ? 'checked' : ''}> ${esc(m.prenom)} ${esc(m.nom)}${off ? '<span class="tag">déjà choisi</span>' : ''}</label>`;
-      li.querySelector('input').addEventListener('change', () => { chosenMate = m.id; renderMates(); });
-      ul.appendChild(li);
-    });
-    const m = mates.find(x => x.id === chosenMate);
-    $('#sendMate').textContent = m ? `Envoyer à ${m.prenom} ${m.nom}` : 'Envoyer à un camarade';
-    $('#sendMate').disabled = !m || locked();
-  }
-  $('#refreshMates').addEventListener('click', refreshMates);
-  $('#sendMate').addEventListener('click', async () => {
-    const m = mates.find(x => x.id === chosenMate); if (!m) return;
-    if (!confirm(`Envoyer votre itinéraire à ${m.prenom} ${m.nom} ?\nL'envoi est définitif : vous ne pourrez plus le modifier.`)) return;
-    $('#sendMate').disabled = true;
-    if (!(await submitToProf(true))) { renderMates(); return; }
-    const r = await api('send', { id: S.me.id, token: S.me.token, toId: m.id });
-    if (!r.ok) { status(r.error, false); chosenMate = null; await refreshMates(); return; }
-    sentTo = r.sentTo; chosenMate = null; $('#status').hidden = true;
-    applyLock(); render(); refreshMates();
-  });
-
-  /* ---------- relève : itinéraire reçu, état d'envoi ---------- */
-  async function poll() {
-    if (!S.me || !ENDPOINT) return;
-    const r = await api('inbox', { id: S.me.id, token: S.me.token });
-    if (!r.ok) {
-      if (/Session invalide/.test(r.error || '')) { stopPolling(); S.me = null; save(); setConnectedUI(); status('Votre session a expiré : reconnectez-vous.', false); }
+  /* ---------- onglet 4 : itinéraire reçu + évaluation ---------- */
+  function renderRecu() {
+    const m = st.mine, rec = m && m.received;
+    $('#recuEmpty').hidden = !!rec; $('#recuBox').hidden = !rec;
+    if (!rec) {
+      $('#recuEmptyTxt').textContent = !m ? 'Faites d\'abord une demande (onglet 1).'
+        : m.status === 'free' ? 'Personne n\'a encore choisi votre demande. Cette page se met à jour toute seule.'
+        : `${m.taker} construit votre itinéraire. Cette page se met à jour toute seule.`;
       return;
     }
-    const wasLocked = locked();
-    sentTo = r.sentTo || null;
-    if (wasLocked !== locked()) { applyLock(); render(); }
-    const sig = JSON.stringify(r.received || null);
-    if (sig !== receivedSig) {
-      const first = !received && !!r.received;
-      received = r.received; receivedSig = sig; renderRoadmap();
-      if (first && view !== 'recu') $('#dot').hidden = false;
-    }
-    if (view === 'mine' && !locked()) refreshMates();
-  }
-  function startPolling() { stopPolling(); poll(); pollTimer = setInterval(poll, POLL_MS); }
-  function stopPolling() { if (pollTimer) clearInterval(pollTimer); pollTimer = null; }
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) poll(); });
-
-  /* ---------- onglets ---------- */
-  function showView(v) {
-    view = v;
-    $('#viewMine').hidden = v !== 'mine'; $('#viewRecu').hidden = v !== 'recu';
-    document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.v === v));
-    if (v === 'recu') { $('#dot').hidden = true; setTimeout(() => { if (rmap) { rmap.invalidateSize(); fitRoadmap(); } }, 50); }
-    else setTimeout(() => map.invalidateSize(), 50);
-  }
-  document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => showView(b.dataset.v)));
-
-  /* ---------- feuille de route ---------- */
-  let rmap = null, rLayer = null;
-  function fitRoadmap() {
-    if (!received || !rmap) return;
-    const pts = received.itin.points.map(p => [p.lat, p.lng]);
-    if (pts.length) rmap.fitBounds(L.latLngBounds(pts), { padding: [50, 50], maxZoom: 16 });
-  }
-  function renderRoadmap() {
-    const empty = $('#recuEmpty'), box = $('#recuBox');
-    if (!received) { empty.hidden = false; box.hidden = true; return; }
-    empty.hidden = true; box.hidden = false;
-    const it = received.itin, from = received.from, pts = it.points;
-    $('#rTitre').textContent = it.titre || 'Votre journée à Bruxelles';
-    $('#rMeta').textContent = `Itinéraire préparé pour vous par ${from.prenom} ${from.nom}` + (it.pour ? ` · « ${it.pour} »` : '');
+    if (!seenReceived) { seenReceived = true; if (view !== 'recu') $('#dotRecu').hidden = false; }
+    const it = rec.itin, pts = it.points;
+    $('#rTitre').textContent = `Pour votre demande : « ${m.text} »`;
+    $('#rMeta').textContent = `Itinéraire construit par ${rec.from}`;
     $('#rIntro').textContent = it.intro || '';
-    // étapes
     const ol = $('#steps'); ol.innerHTML = '';
     pts.forEach((p, i) => {
       const li = document.createElement('li'); li.className = 'step';
@@ -651,30 +763,62 @@
     });
     const last = pts[pts.length - 1], lm = toMin(last.time);
     if (lm !== null) { const e = document.createElement('li'); e.className = 'walk'; e.textContent = `Fin de la journée vers ${fmtT(lm + (last.dur || 0))}.`; ol.appendChild(e); }
-    // lien Google Maps (itinéraire à pied)
     const q = p => `${p.lat.toFixed(6)},${p.lng.toFixed(6)}`;
     const g = new URL('https://www.google.com/maps/dir/');
     g.searchParams.set('api', '1'); g.searchParams.set('travelmode', 'walking');
     g.searchParams.set('origin', q(pts[0])); g.searchParams.set('destination', q(pts[pts.length - 1]));
     if (pts.length > 2) g.searchParams.set('waypoints', pts.slice(1, -1).map(q).join('|'));
     $('#gmaps').href = g.toString();
-    // carte
+    if (view === 'recu') drawReceived();
+    renderEval();
+  }
+  function drawReceived() {
+    const rec = st.mine && st.mine.received; if (!rec) return;
     if (!rmap) rmap = mkMap('rmap');
+    rmap.invalidateSize();
     if (rLayer) rLayer.remove();
     rLayer = L.layerGroup().addTo(rmap);
+    const pts = rec.itin.points;
     if (pts.length > 1) L.polyline(pts.map(p => [p.lat, p.lng]), { color: '#1f4e6b', weight: 3, opacity: .9 }).addTo(rLayer);
     pts.forEach((p, i) => L.marker([p.lat, p.lng], { icon: pinIcon(i, p.cat, false) }).bindTooltip(`${esc(p.time || '')} · ${esc(p.name)}`, { className: 'lt' }).addTo(rLayer));
-    if (view === 'recu') { rmap.invalidateSize(); fitRoadmap(); }
+    if (pts.length) rmap.fitBounds(L.latLngBounds(pts.map(p => [p.lat, p.lng])), { padding: [50, 50], maxZoom: 16 });
   }
   $('#printBtn').addEventListener('click', () => { document.body.classList.add('print-recu'); setTimeout(() => { window.print(); document.body.classList.remove('print-recu'); }, 100); });
 
+  function renderEval() {
+    const saved = st.mine && st.mine.ev;
+    if (saved && !evDirty) { ev = { c1: saved.c1, c2: saved.c2, c3: saved.c3 }; if (document.activeElement !== $('#evComment')) $('#evComment').value = saved.comment || ''; }
+    $('#crits').innerHTML = CRITS.map(([k, t], i) => `<div class="crit"><p>${i + 1}. ${esc(t)}</p><div class="scale" role="radiogroup" aria-label="${esc(t)}">${
+      [1, 2, 3, 4, 5].map(n => `<label class="${ev[k] === n ? 'on' : ''}"><input type="radio" name="${k}" value="${n}" ${ev[k] === n ? 'checked' : ''}>${n}<small>${SCALE[n - 1]}</small></label>`).join('')}</div></div>`).join('');
+    $('#crits').querySelectorAll('input').forEach(inp => inp.addEventListener('change', () => { ev[inp.name] = +inp.value; evDirty = true; renderEval(); }));
+    $('#evSend').textContent = saved ? 'Modifier mon évaluation' : 'Envoyer mon évaluation';
+    if (saved && !evDirty) flash('#evStatus', 'Évaluation envoyée. Merci !', true);
+  }
+  $('#evComment').addEventListener('input', () => { evDirty = true; });
+  $('#evSend').addEventListener('click', async () => {
+    if (!ev.c1 || !ev.c2 || !ev.c3) { flash('#evStatus', 'Répondez aux trois critères (de 1 à 5).', false); return; }
+    $('#evSend').disabled = true;
+    const r = await call('evaluate', { c1: ev.c1, c2: ev.c2, c3: ev.c3, comment: $('#evComment').value });
+    $('#evSend').disabled = false;
+    if (!r.ok) { flash('#evStatus', r.error, false); return; }
+    evDirty = false; flash('#evStatus', 'Évaluation envoyée. Merci !', true); await poll();
+  });
+
+  /* ---------- onglets ---------- */
+  function showView(v) {
+    view = v;
+    ['req', 'list', 'build', 'recu'].forEach(k => { $('#v' + k[0].toUpperCase() + k.slice(1)).hidden = k !== v; });
+    document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.v === v));
+    if (v === 'recu') { $('#dotRecu').hidden = true; setTimeout(drawReceived, 40); }
+    if (v === 'build' && st && st.task) { ensureMap(); setTimeout(() => { map.invalidateSize(); syncMarkers(); drawRoute(); fitPts(); }, 40); }
+  }
+  document.querySelectorAll('#tabs button').forEach(b => b.addEventListener('click', () => showView(b.dataset.v)));
+
   /* ---------- démarrage ---------- */
   load();
-  ['prenom', 'nom', 'classe', 'titre', 'pour', 'intro'].forEach(k => $('#' + k).value = S[k] || '');
-  if (!ENDPOINT) S.me = null;
-  sortPoints(); setConnectedUI(); render();
-  if (S.points.length > 1) map.fitBounds(L.latLngBounds(S.points.map(p => [p.lat, p.lng])), { padding: [60, 60] });
-  if (S.me) { startPolling(); refreshMates(); }
+  ['prenom', 'nom'].forEach(k => $('#' + k).value = S[k] || '');
+  if (!ENDPOINT) { $('#classesHelp').textContent = 'Cette page n\'est pas encore reliée au serveur de la classe.'; $('#connect').disabled = true; }
+  else loadClasses().then(() => { if (S.me) enterApp(); });
 })();
 </script>
 </body>
