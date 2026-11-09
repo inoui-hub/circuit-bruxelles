@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mon itinéraire à Bruxelles</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root{
+    --ink:#1f2933; --bg:#e9ecef; --card:#fff; --muted:#5f6b76; --accent:#1f4e6b; --accent-ink:#fff;
+    --border:#cfd5db; --danger:#b3261e; --ok:#1d6b3a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --ink:#e8eaed; --bg:#14171a; --card:#1d2125; --muted:#9aa5b1; --border:#343b42; --accent:#8bb8d4; --accent-ink:#0e1215; --danger:#f2a29d; --ok:#8fd4a5; }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);padding:0 20px 48px}
+  .wrap{max-width:1300px;margin:0 auto}
+  header{padding:22px 0 12px;max-width:900px}
+  .eyebrow{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 6px}
+  h1{margin:0 0 6px;font-size:clamp(1.5rem,3.4vw,2.2rem);letter-spacing:-.01em}
+  .consigne{margin:0;color:var(--muted);line-height:1.55}
+  .consigne b{color:var(--ink);font-weight:650}
+
+  button,select,input,textarea{font:inherit;color:var(--ink)}
+  button{font-size:.9rem;font-weight:550;cursor:pointer;border:1px solid var(--border);background:var(--card);border-radius:8px;padding:8px 13px;min-height:40px}
+  button:hover{border-color:var(--accent)}
+  button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  input,select,textarea{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;width:100%;min-height:40px}
+  input.bad,select.bad{border-color:var(--danger)}
+  textarea{min-height:76px;resize:vertical}
+  label{display:block;font-size:.76rem;font-weight:650;color:var(--muted);margin:0 0 3px}
+  [hidden]{display:none!important}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px}
+  .card h2{margin:0 0 10px;font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .top{display:grid;gap:12px;grid-template-columns:1fr;margin:14px 0}
+  @media (min-width:900px){ .top{grid-template-columns:1fr 1.4fr} }
+  .g3{display:grid;gap:8px;grid-template-columns:1fr 1fr 90px}
+  .g2{display:grid;gap:8px;grid-template-columns:1fr 1fr}
+
+  .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin:0 0 12px}
+  .bar .grow{flex:1;min-width:220px;position:relative}
+  .results{position:absolute;z-index:1200;left:0;right:0;top:100%;margin:4px 0 0;padding:4px;list-style:none;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+  .results li{padding:8px 10px;border-radius:6px;cursor:pointer;font-size:.9rem}
+  .results li:hover{background:var(--bg)}
+
+  .app{display:grid;gap:16px;grid-template-columns:1fr}
+  @media (min-width:1000px){ .app{grid-template-columns:minmax(0,1fr) 440px} }
+  #map{height:70vh;min-height:460px;border:2px solid #2e3e4c;border-radius:10px;z-index:0}
+  #map.adding{cursor:crosshair}
+  .hintbar{margin:8px 0 0;font-size:.88rem;color:var(--muted)}
+  .side{display:grid;gap:12px;align-content:start}
+
+  .pt{border:1px solid var(--border);border-radius:10px;padding:10px;margin:0 0 10px;background:var(--card)}
+  .pt.sel{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}
+  .pt-head{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+  .badge{flex:none;width:28px;height:28px;border-radius:50%;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.9rem;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25)}
+  .pt-title{flex:1;min-width:0;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .moment{font-size:.76rem;font-weight:700;color:var(--muted);display:block}
+  .pt-head button{min-height:32px;min-width:32px;padding:2px 8px}
+  .del{color:var(--danger)}
+  .field{margin-bottom:8px}
+  .muted{color:var(--muted);font-size:.88rem;line-height:1.5}
+  .status{padding:10px 12px;border-radius:8px;font-size:.92rem;line-height:1.5;margin-top:10px}
+  .status.ok{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok);border:1px solid var(--ok)}
+  .status.err{background:color-mix(in srgb,var(--danger) 14%,transparent);color:var(--danger);border:1px solid var(--danger)}
+  .row{display:flex;gap:8px;flex-wrap:wrap}
+
+  .pin{width:30px;height:30px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.45)}
+  .pin span{transform:rotate(45deg);color:#fff;font-weight:800;font-size:13px}
+  .pin.sel{box-shadow:0 0 0 3px #1f4e6b,0 2px 8px rgba(0,0,0,.5)}
+  .leaflet-tooltip.lt{font-weight:600;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Atelier · itinéraire à Bruxelles</p>
+    <h1>Votre journée idéale à Bruxelles</h1>
+    <p class="consigne">Imaginez que <b>vous accueillez un ami</b> pour une journée à Bruxelles. Quels sont <b>les lieux à voir absolument</b>, <b>dans quel ordre</b> et <b>à quelle heure</b> ? Café du matin, musée, balade, soirée… tout ce que vous jugez digne de votre itinéraire. Placez vos points sur la carte, commentez-les, puis envoyez-les à votre professeur.</p>
+  </header>
+
+  <div class="top">
+    <section class="card">
+      <h2>1 · Vous</h2>
+      <div class="g3">
+        <div><label for="prenom">Prénom *</label><input id="prenom" maxlength="40" autocomplete="given-name"></div>
+        <div><label for="nom">Nom *</label><input id="nom" maxlength="40" autocomplete="family-name"></div>
+        <div><label for="classe">Classe *</label><input id="classe" maxlength="12" placeholder="ex. 6B"></div>
+      </div>
+    </section>
+    <section class="card">
+      <h2>2 · Votre itinéraire</h2>
+      <div class="g2">
+        <div><label for="titre">Titre de la journée</label><input id="titre" maxlength="80" placeholder="Ex. : Bruxelles côté café et art nouveau"></div>
+        <div><label for="pour">Pour qui ?</label><input id="pour" maxlength="80" placeholder="Ex. : un ami qui aime la photo"></div>
+      </div>
+      <div class="field" style="margin-top:8px"><label for="intro">Un mot pour présenter cette journée</label><input id="intro" maxlength="200" placeholder="Ex. : Une journée tranquille, à faire à pied."></div>
+    </section>
+  </div>
+
+  <div class="app">
+    <div>
+      <div class="bar">
+        <div class="grow">
+          <label for="q">3 · Chercher un lieu</label>
+          <input id="q" type="search" placeholder="Ex. : Atomium, Grand-Place, un café…" autocomplete="off">
+          <ul class="results" id="results" hidden></ul>
+        </div>
+        <button id="addBtn" class="primary" aria-pressed="false">Placer un point sur la carte</button>
+      </div>
+      <div id="map" aria-label="Carte de Bruxelles"></div>
+      <p class="hintbar" id="hint"></p>
+    </div>
+
+    <aside class="side">
+      <section class="card">
+        <h2>Mes points <span id="cnt"></span></h2>
+        <div id="list"></div>
+        <p class="muted" id="empty">Aucun point pour l'instant. Cherchez un lieu ou cliquez sur « Placer un point », puis sur la carte.</p>
+        <p class="muted" id="orderHint" hidden>Les points sont classés automatiquement par heure : changez l'heure pour changer l'ordre.</p>
+      </section>
+
+      <section class="card">
+        <h2>4 · Envoyer</h2>
+        <p class="muted" id="sendHelp"></p>
+        <div class="row">
+          <button id="send" class="primary">Envoyer à mon professeur</button>
+          <button id="dl">Télécharger ma copie</button>
+        </div>
+        <div id="status" class="status" hidden role="status"></div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+(() => {
+  /* ============ À RÉGLER PAR L'ENSEIGNANT ============
+     ENDPOINT : adresse du script de collecte (voir collecte-google.gs).
+     Laissez vide pour que les élèves téléchargent un fichier à vous transmettre. */
+  const ENDPOINT = '';
+  const MAX = 6;
+
+  const CATS = {
+    cafe:   { n:'Café & pause',               c:'#a0522d' },
+    gastro: { n:'Restaurant & gourmandise',   c:'#c2562f' },
+    patri:  { n:'Patrimoine & histoire',      c:'#8c5a3c' },
+    musee:  { n:'Musée & culture',            c:'#5d4f9a' },
+    archi:  { n:'Architecture & art nouveau', c:'#b07a2a' },
+    nature: { n:'Parc & nature',              c:'#4f8a4f' },
+    shop:   { n:'Shopping & marché',          c:'#b34a7d' },
+    nuit:   { n:'Sortie & vie nocturne',      c:'#2f4b7c' },
+    trans:  { n:'Transport & étape',          c:'#4a5560' },
+    autre:  { n:'Autre',                      c:'#777777' },
+  };
+  const DURS = [15,30,45,60,75,90,120,150,180,240];
+  const KEY = 'itineraire-eleve-v1';
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  let S = { prenom:'', nom:'', classe:'', titre:'', pour:'', intro:'', points:[] };
+  let selected = null, adding = false, uid = 0;
+  const markers = {}; let routeLine = null;
+
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (_) {} };
+  function load() {
+    try {
+      const d = JSON.parse(localStorage.getItem(KEY) || 'null');
+      if (d && Array.isArray(d.points)) S = Object.assign(S, d, { points: d.points.slice(0, MAX) });
+    } catch (_) {}
+    S.points.forEach(p => { p.id = p.id || ('p' + (++uid)); uid = Math.max(uid, +String(p.id).replace(/\D/g, '') || 0); });
+  }
+
+  const toMin = t => { const m = /^(\d{1,2}):(\d{2})$/.exec(t || ''); return m ? +m[1] * 60 + +m[2] : null; };
+  const fmtT = m => `${String(Math.floor(m / 60) % 24).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+  const moment = t => {
+    const m = toMin(t); if (m === null) return 'Heure à choisir';
+    const h = m / 60;
+    return h >= 5 && h < 11 ? 'Matin' : h >= 11 && h < 14 ? 'Midi' : h >= 14 && h < 18 ? 'Après-midi' : h >= 18 && h < 22 ? 'Soirée' : 'Nuit';
+  };
+  const label = p => p.name || 'Point sans nom';
+
+  // ---------- carte ----------
+  const map = L.map('map', { minZoom: 11, maxBounds: [[50.70, 4.10], [51.02, 4.62]], maxBoundsViscosity: .8 }).setView([50.8467, 4.3525], 13);
+  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map);
+  L.control.scale({ metric: true, imperial: false }).addTo(map);
+
+  function setAdding(on) {
+    adding = on && S.points.length < MAX;
+    $('#addBtn').setAttribute('aria-pressed', adding);
+    $('#addBtn').disabled = S.points.length >= MAX;
+    $('#map').classList.toggle('adding', adding);
+    $('#hint').textContent = adding ? 'Cliquez à l\'endroit voulu sur la carte.'
+      : S.points.length >= MAX ? `Vous avez placé ${MAX} points : supprimez-en un pour en ajouter un autre.`
+      : 'Glissez un repère pour l\'ajuster. Maximum ' + MAX + ' points.';
+  }
+  $('#addBtn').addEventListener('click', () => setAdding(!adding));
+  map.on('click', e => { if (adding) { addPoint(e.latlng); } });
+
+  function nextTime() {
+    const ts = S.points.map(p => toMin(p.time)).filter(t => t !== null);
+    if (!ts.length) return '10:00';
+    const last = S.points.slice().sort((a, b) => (toMin(a.time) ?? 0) - (toMin(b.time) ?? 0)).pop();
+    return fmtT(Math.min(23 * 60, (toMin(last.time) ?? 600) + (+last.dur || 60) + 30));
+  }
+  function addPoint(ll, pre = {}) {
+    if (S.points.length >= MAX) return;
+    const p = { id: 'p' + (++uid), lat: ll.lat, lng: ll.lng, name: pre.name || '', cat: 'autre', time: nextTime(), dur: 60, comment: '' };
+    S.points.push(p); selected = p.id; sortPoints(); save(); render(); setAdding(false);
+  }
+  function sortPoints() {
+    S.points = S.points.map((p, i) => [p, i]).sort((a, b) => ((toMin(a[0].time) ?? 9999) - (toMin(b[0].time) ?? 9999)) || a[1] - b[1]).map(x => x[0]);
+  }
+
+  // ---------- recherche (OpenStreetMap / Nominatim) ----------
+  let searchTimer;
+  $('#q').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    const q = e.target.value.trim();
+    if (q.length < 3) { $('#results').hidden = true; return; }
+    searchTimer = setTimeout(async () => {
+      const ul = $('#results');
+      try {
+        const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=be&viewbox=4.24,50.92,4.50,50.76&bounded=1&accept-language=fr&q=' + encodeURIComponent(q);
+        const rows = await (await fetch(url)).json();
+        ul.innerHTML = '';
+        if (!rows.length) ul.innerHTML = '<li>Aucun résultat à Bruxelles</li>';
+        rows.forEach(r => {
+          const li = document.createElement('li');
+          li.textContent = r.display_name.split(',').slice(0, 3).join(',');
+          li.onclick = () => {
+            ul.hidden = true; $('#q').value = '';
+            const ll = L.latLng(+r.lat, +r.lon); map.flyTo(ll, 16);
+            const d = document.createElement('div');
+            d.innerHTML = `<b>${esc(r.display_name.split(',')[0])}</b><br><button style="margin-top:6px;min-height:30px;padding:2px 10px">Ajouter à mon itinéraire</button>`;
+            d.querySelector('button').onclick = () => { addPoint(ll, { name: r.display_name.split(',')[0] }); map.closePopup(); };
+            L.popup().setLatLng(ll).setContent(d).openOn(map);
+          };
+          ul.appendChild(li);
+        });
+        ul.hidden = false;
+      } catch (_) { ul.innerHTML = '<li>Recherche indisponible : placez le point à la main</li>'; ul.hidden = false; }
+    }, 450);
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('.grow')) $('#results').hidden = true; });
+
+  // ---------- rendu ----------
+  const pinIcon = (i, cat, sel) => L.divIcon({ className: '', iconSize: [30, 30], iconAnchor: [15, 30], tooltipAnchor: [14, -18],
+    html: `<div class="pin${sel ? ' sel' : ''}" style="background:${CATS[cat].c}"><span>${i + 1}</span></div>` });
+
+  function syncMarkers() {
+    const ids = new Set(S.points.map(p => p.id));
+    Object.keys(markers).forEach(id => { if (!ids.has(id)) { markers[id].remove(); delete markers[id]; } });
+    S.points.forEach((p, i) => {
+      let m = markers[p.id];
+      if (!m) {
+        m = L.marker([p.lat, p.lng], { draggable: true, icon: pinIcon(i, p.cat, false), zIndexOffset: 1000 }).addTo(map);
+        m.bindTooltip('', { className: 'lt', permanent: true, direction: 'right', offset: [8, 0] });
+        m.on('click', () => { selected = p.id; syncCards(); syncMarkers(); document.getElementById('pt-' + p.id)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); });
+        m.on('dragend', () => { const ll = m.getLatLng(); p.lat = ll.lat; p.lng = ll.lng; save(); drawRoute(); });
+        markers[p.id] = m;
+      }
+      m.setIcon(pinIcon(i, p.cat, p.id === selected));
+      m.setTooltipContent(`${esc(p.time || '')} · ${esc(label(p))}`);
+    });
+  }
+  function drawRoute() {
+    if (routeLine) { routeLine.remove(); routeLine = null; }
+    if (S.points.length > 1) routeLine = L.polyline(S.points.map(p => [p.lat, p.lng]), { color: '#1f4e6b', weight: 4, opacity: .85, dashArray: '9 7' }).addTo(map);
+  }
+  const syncCards = () => document.querySelectorAll('.pt').forEach(c => c.classList.toggle('sel', c.dataset.id === selected));
+
+  function render() {
+    const list = $('#list'); list.innerHTML = '';
+    S.points.forEach((p, i) => {
+      const d = document.createElement('div');
+      d.className = 'pt' + (p.id === selected ? ' sel' : ''); d.id = 'pt-' + p.id; d.dataset.id = p.id;
+      d.innerHTML = `
+        <div class="pt-head">
+          <span class="badge" style="background:${CATS[p.cat].c}">${i + 1}</span>
+          <span class="pt-title">${esc(label(p))}<span class="moment" data-moment>${esc(moment(p.time))}</span></span>
+          <button data-act="del" class="del" aria-label="Supprimer ce point">×</button>
+        </div>
+        <div class="g2 field">
+          <div><label>Heure *</label><input type="time" data-f="time" value="${esc(p.time)}"></div>
+          <div><label>Durée sur place</label><select data-f="dur">${DURS.map(v => `<option value="${v}" ${v === +p.dur ? 'selected' : ''}>${v >= 60 ? Math.floor(v / 60) + ' h' + (v % 60 ? ' ' + v % 60 : '') : v + ' min'}</option>`).join('')}</select></div>
+        </div>
+        <div class="field"><label>Nom du lieu *</label><input data-f="name" maxlength="60" value="${esc(p.name)}" placeholder="Nom du lieu"></div>
+        <div class="field"><label>Type de lieu</label><select data-f="cat">${Object.entries(CATS).map(([k, v]) => `<option value="${k}" ${k === p.cat ? 'selected' : ''}>${v.n}</option>`).join('')}</select></div>
+        <div class="field"><label>Pourquoi y aller absolument ? Votre conseil</label><textarea data-f="comment" maxlength="500" placeholder="Ce qu'il faut voir, goûter, ressentir… et pourquoi à ce moment de la journée.">${esc(p.comment)}</textarea></div>`;
+      list.appendChild(d);
+    });
+    $('#empty').hidden = S.points.length > 0;
+    $('#orderHint').hidden = S.points.length < 2;
+    $('#cnt').textContent = `(${S.points.length}/${MAX})`;
+    syncMarkers(); drawRoute(); setAdding(false);
+    const p = S.points.find(q => q.id === selected); if (p) map.panTo([p.lat, p.lng]);
+  }
+
+  const listEl = $('#list');
+  listEl.addEventListener('input', e => {
+    const f = e.target.dataset.f; if (!f || f === 'time') return;
+    const p = S.points.find(q => q.id === e.target.closest('.pt').dataset.id);
+    p[f] = f === 'dur' ? +e.target.value : e.target.value;
+    const card = e.target.closest('.pt');
+    if (f === 'name') card.querySelector('.pt-title').firstChild.textContent = label(p);
+    if (f === 'cat') card.querySelector('.badge').style.background = CATS[p.cat].c;
+    save(); syncMarkers();
+  });
+  listEl.addEventListener('change', e => {
+    if (e.target.dataset.f !== 'time') return;
+    const p = S.points.find(q => q.id === e.target.closest('.pt').dataset.id);
+    p.time = e.target.value; selected = p.id; sortPoints(); save(); render();
+  });
+  listEl.addEventListener('click', e => {
+    const card = e.target.closest('.pt'); if (!card) return;
+    const id = card.dataset.id;
+    if (e.target.closest('button')?.dataset.act === 'del') {
+      if (!confirm('Supprimer ce point ?')) return;
+      S.points = S.points.filter(q => q.id !== id); if (selected === id) selected = null; save(); render(); return;
+    }
+    if (selected !== id) { selected = id; syncCards(); syncMarkers(); const p = S.points.find(q => q.id === id); map.panTo([p.lat, p.lng]); }
+  });
+
+  ['prenom', 'nom', 'classe', 'titre', 'pour', 'intro'].forEach(k => {
+    $('#' + k).addEventListener('input', e => { S[k] = e.target.value; e.target.classList.remove('bad'); save(); });
+  });
+
+  // ---------- envoi ----------
+  const status = (msg, ok) => { const s = $('#status'); s.hidden = false; s.className = 'status ' + (ok ? 'ok' : 'err'); s.textContent = msg; };
+  function validate() {
+    const errs = [];
+    ['prenom', 'nom', 'classe'].forEach(k => { const bad = !S[k].trim(); $('#' + k).classList.toggle('bad', bad); if (bad) errs.push(k === 'prenom' ? 'le prénom' : k === 'nom' ? 'le nom' : 'la classe'); });
+    if (S.points.length < 2) errs.push('au moins 2 points');
+    if (S.points.some(p => !p.name.trim())) errs.push('le nom de chaque lieu');
+    if (S.points.some(p => toMin(p.time) === null)) errs.push('l\'heure de chaque point');
+    return errs;
+  }
+  function payload() {
+    return {
+      version: 2, sentAt: new Date().toISOString(),
+      student: { prenom: S.prenom.trim(), nom: S.nom.trim(), classe: S.classe.trim() },
+      titre: S.titre.trim(), pour: S.pour.trim(), intro: S.intro.trim(),
+      points: S.points.map(({ lat, lng, name, cat, time, dur, comment }) => ({ lat, lng, name: name.trim(), cat, time, dur, comment: comment.trim() })),
+    };
+  }
+  function download() {
+    const d = payload();
+    const blob = new Blob([JSON.stringify(d, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    const slug = s => s.replace(/[^\p{L}\p{N}_-]+/gu, '-');
+    a.href = URL.createObjectURL(blob); a.download = `itineraire-${slug(d.student.classe)}-${slug(d.student.nom)}-${slug(d.student.prenom)}.json`;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }
+  $('#dl').addEventListener('click', () => {
+    const errs = validate();
+    if (errs.length) { status('Il manque : ' + errs.join(', ') + '.', false); return; }
+    download(); status('Copie téléchargée. Conservez ce fichier.', true);
+  });
+  $('#send').addEventListener('click', async () => {
+    const errs = validate();
+    if (errs.length) { status('Il manque : ' + errs.join(', ') + '.', false); return; }
+    if (!ENDPOINT) { download(); status('L\'envoi en ligne n\'est pas activé : votre fichier a été téléchargé. Transmettez-le à votre professeur.', true); return; }
+    $('#send').disabled = true;
+    try {
+      await fetch(ENDPOINT, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload()) });
+      status('Itinéraire envoyé à votre professeur. Vous pouvez le modifier et le renvoyer : le dernier envoi remplace le précédent.', true);
+    } catch (_) {
+      download(); status('L\'envoi a échoué (connexion ?). Une copie a été téléchargée : transmettez-la à votre professeur.', false);
+    } finally { $('#send').disabled = false; }
+  });
+  $('#sendHelp').textContent = ENDPOINT
+    ? 'Vérifiez le prénom, le nom et la classe, puis envoyez. Vous pourrez renvoyer une version corrigée.'
+    : 'L\'envoi en ligne n\'est pas activé sur cette page : le bouton télécharge un fichier à transmettre à votre professeur.';
+
+  // ---------- démarrage ----------
+  load();
+  ['prenom', 'nom', 'classe', 'titre', 'pour', 'intro'].forEach(k => $('#' + k).value = S[k] || '');
+  sortPoints(); render();
+  if (S.points.length > 1) map.fitBounds(L.latLngBounds(S.points.map(p => [p.lat, p.lng])), { padding: [60, 60] });
+})();
+</script>
+</body>
+</html>
