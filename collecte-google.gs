@@ -30,11 +30,14 @@
  */
 const CLE_ENSEIGNANT = 'changez-moi';
 const ONGLET = 'Eleves';
+// Laisser vide si le script est créé depuis le tableur (Extensions > Apps Script).
+// Si le script est autonome : identifiant du Google Sheet (entre /d/ et /edit dans son adresse).
+const SHEET_ID = '';
 const COLS = ['id', 'classe', 'nom', 'prenom', 'token', 'joinedAt', 'itin', 'itinAt', 'sendTo', 'recvFrom'];
 
 /* ---------- accès au tableur ---------- */
 function sheet_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(ONGLET);
   if (!sh) {
     sh = ss.insertSheet(ONGLET);
