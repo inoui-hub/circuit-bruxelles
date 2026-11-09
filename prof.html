@@ -355,14 +355,14 @@
   /* ---------- projection / admin ---------- */
   function liveUrl() {
     const u = new URL('live.html', location.href);
-    u.hash = new URLSearchParams({ u: cfg.url, k: cfg.key, ...(classSel ? { c: classSel } : {}) }).toString();
+    u.search = new URLSearchParams({ k: data.projection || cfg.key, ...(classSel ? { c: classSel } : {}) }).toString();
     return u.toString();
   }
   $('#liveBtn').addEventListener('click', () => { if (!cfg.url || !cfg.key) return flash('#status', 'Renseignez d\'abord le serveur et la clé.', false); window.open(liveUrl(), '_blank', 'noopener'); });
   $('#liveCopy').addEventListener('click', async () => {
     if (!cfg.url || !cfg.key) return flash('#status', 'Renseignez d\'abord le serveur et la clé.', false);
-    try { await navigator.clipboard.writeText(liveUrl()); flash('#status', 'Lien copié. Il contient la clé enseignant : ne le partagez pas avec les élèves.', true); }
-    catch (_) { prompt('Copiez ce lien (il contient la clé enseignant) :', liveUrl()); }
+    try { await navigator.clipboard.writeText(liveUrl()); flash('#status', 'Lien copié (lecture seule : prénoms et points). Collez-le dans PowerPoint avec le complément « Web Viewer ».', true); }
+    catch (_) { prompt('Copiez ce lien :', liveUrl()); }
   });
   $('#purge').addEventListener('click', async () => {
     if (!confirm('Supprimer TOUS les élèves et TOUTES les demandes (toutes classes) ?\nCette action est définitive. La liste des classes est conservée.')) return;

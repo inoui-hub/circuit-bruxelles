@@ -41,13 +41,14 @@
 <div class="panel" id="head"><h1>Itinéraires de la classe</h1><p id="sub">Les points apparaissent au fur et à mesure.</p></div>
 <div class="panel" id="legend"><h2>Qui construit quoi</h2><ul id="leg"></ul></div>
 <div class="panel" id="foot"><span class="led" id="led"></span><span id="state">Connexion…</span><label>Classe <select id="cls"><option value="">Toutes</option></select></label></div>
-<div id="setup"><div><h1>Écran de projection</h1><p>Ouvrez cette page depuis le tableau de bord enseignant (bouton « Écran de projection »), qui ajoute l'adresse du serveur et la clé au lien.</p></div></div>
+<div id="setup"><div><h1>Écran de projection</h1><p>Ouvrez cette page depuis le tableau de bord enseignant (bouton « Écran de projection » ou « Copier le lien de projection »), qui ajoute le code de projection au lien.</p></div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 (() => {
-  const P = new URLSearchParams(location.hash.slice(1));
-  let url = P.get('u') || '', key = P.get('k') || '', cls = P.get('c') || '';
-  if (!url || !key) { try { const d = JSON.parse(localStorage.getItem('circuit-bruxelles-collecte-v1') || 'null'); if (d) { url = url || d.url; key = key || d.key; } } catch (_) {} }
+  const ENDPOINT = 'https://script.google.com/macros/s/AKfycbws5i5VCuJP2EnADxLkmVSIuB07KvUj1fOfmTQmKLWv-QFBx12-Ddiff47M5sQz-INj/exec';
+  const P = new URLSearchParams(location.search || location.hash.slice(1));
+  const url = P.get('u') || ENDPOINT, key = P.get('k') || '';
+  let cls = P.get('c') || '';
   if (!url || !key) { document.getElementById('setup').style.display = 'flex'; return; }
   const COLORS = ['#e6194b','#3cb44b','#4363d8','#f58231','#911eb4','#008080','#9a6324','#f032e6','#808000','#000075','#e6a800','#00a3a3','#800000','#6b8e23','#ff6f91','#555555'];
   const $ = s => document.querySelector(s);
@@ -61,7 +62,7 @@
 
   async function tick() {
     let r;
-    try { r = await (await fetch(url + (url.includes('?') ? '&' : '?') + new URLSearchParams({ action: 'all', key }))).json(); }
+    try { r = await (await fetch(url + (url.includes('?') ? '&' : '?') + new URLSearchParams({ action: 'live', key }))).json(); }
     catch (_) { r = { ok: false }; }
     $('#led').classList.toggle('off', !r.ok);
     if (!r.ok) { $('#state').textContent = r.error || 'Connexion perdue : nouvelle tentative…'; return; }

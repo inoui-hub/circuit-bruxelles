@@ -32,6 +32,8 @@
  *  - Pas de données sensibles : seulement des prénoms/noms et des lieux de Bruxelles.
  */
 const CLE_ENSEIGNANT = 'changez-moi';
+// Code de l'écran de projection (lecture seule : prénoms et points uniquement). Peut figurer dans un PowerPoint.
+const CLE_PROJECTION = 'projection-changez-moi';
 // Laisser vide si le script est créé depuis le tableur (Extensions > Apps Script).
 // Si le script est autonome : identifiant du Google Sheet (entre /d/ et /edit dans son adresse).
 const SHEET_ID = '';
@@ -231,9 +233,23 @@ function all_() {
   const ps = rows_('Participants'), qs = rows_('Demandes'), on = online_(ps.map(p => p.id)), byId = {};
   ps.forEach(p => { byId[p.id] = p; });
   return ok_({
-    classes: classes_(), now: new Date().toISOString(),
+    classes: classes_(), now: new Date().toISOString(), projection: CLE_PROJECTION,
     students: ps.map(p => ({ id: p.id, classe: p.classe, nom: p.nom, prenom: p.prenom, joinedAt: p.joinedAt, online: !!on[p.id] })),
     requests: qs.map(q => Object.assign(reqView_(q, byId), { classe: q.classe, itin: parse_(q.itin), itinAt: q.itinAt, sentAt: q.sentAt, ev: parse_(q.ev) })),
+  });
+}
+function live_() { // version réduite, sans noms de famille ni commentaires
+  const ps = rows_('Participants'), qs = rows_('Demandes'), on = online_(ps.map(p => p.id)), byId = {};
+  ps.forEach(p => { byId[p.id] = p; });
+  const first = id => (byId[id] ? byId[id].prenom : '');
+  return ok_({
+    classes: classes_(),
+    students: ps.map(p => ({ classe: p.classe, prenom: p.prenom, online: !!on[p.id] })),
+    requests: qs.map(q => {
+      const it = parse_(q.itin);
+      return { id: q.id, classe: q.classe, text: q.text, author: first(q.authorId), taker: first(q.takenBy), takenBy: q.takenBy,
+        status: status_(q), itin: it ? { points: it.points.map(p => ({ lat: p.lat, lng: p.lng, name: p.name })) } : null };
+    }),
   });
 }
 function setclasses_(b) {
@@ -280,6 +296,7 @@ function doPost(e) {
   try {
     if (b.action === 'classes') return classes_out_();
     if (b.action === 'all') return admin ? all_() : err_('Clé enseignant incorrecte.');
+    if (b.action === 'live') return (admin || b.key === CLE_PROJECTION) ? live_() : err_('Code de projection incorrect.');
     if (READ[b.action]) return READ[b.action](b); // lectures : sans verrou, pour rester rapide
     const fn = WRITE[b.action] || (ADMIN[b.action] && (admin ? ADMIN[b.action] : null));
     if (!fn) return err_(ADMIN[b.action] ? 'Clé enseignant incorrecte.' : 'Action inconnue.');
@@ -294,5 +311,6 @@ function doGet(e) {
   const p = (e && e.parameter) || {};
   if (p.action === 'classes') return classes_out_();
   if (p.action === 'all') return p.key === CLE_ENSEIGNANT ? all_() : err_('Clé enseignant incorrecte.');
+  if (p.action === 'live') return (p.key === CLE_ENSEIGNANT || p.key === CLE_PROJECTION) ? live_() : err_('Code de projection incorrect.');
   return ok_({ service: 'itineraires-bruxelles' });
 }
