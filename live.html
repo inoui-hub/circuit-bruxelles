@@ -42,9 +42,11 @@
 <div class="panel" id="legend"><h2>Qui construit quoi</h2><ul id="leg"></ul></div>
 <div class="panel" id="foot"><span class="led" id="led"></span><span id="state">Connexion…</span><label>Classe <select id="cls"><option value="">Toutes</option></select></label></div>
 <div id="setup"><div><h1>Écran de projection</h1><p>Ouvrez cette page depuis le tableau de bord enseignant (bouton « Écran de projection » ou « Copier le lien de projection »), qui ajoute le code de projection au lien.</p></div></div>
+<script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 (() => {
+  try { if (window.Office && Office.onReady) Office.onReady(); } catch (_) {}
   const ENDPOINT = 'https://script.google.com/macros/s/AKfycbws5i5VCuJP2EnADxLkmVSIuB07KvUj1fOfmTQmKLWv-QFBx12-Ddiff47M5sQz-INj/exec';
   const P = new URLSearchParams(location.search || location.hash.slice(1));
   const url = P.get('u') || ENDPOINT, key = P.get('k') || '';

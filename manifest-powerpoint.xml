@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="ContentApp">
+  <Id>dc239f5b-3618-4ff2-85c1-1d94454dfc6b</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Atelier Bruxelles</ProviderName>
+  <DefaultLocale>fr-FR</DefaultLocale>
+  <DisplayName DefaultValue="Itinéraires en direct"/>
+  <Description DefaultValue="Carte en direct des itinéraires construits par la classe."/>
+  <IconUrl DefaultValue="https://inoui-hub.github.io/circuit-bruxelles/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://inoui-hub.github.io/circuit-bruxelles/icon-64.png"/>
+  <SupportUrl DefaultValue="https://inoui-hub.github.io/circuit-bruxelles/"/>
+  <AppDomains>
+    <AppDomain>https://inoui-hub.github.io</AppDomain>
+    <AppDomain>https://script.google.com</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Presentation"/>
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://inoui-hub.github.io/circuit-bruxelles/live.html?k=6455752df6a8"/>
+    <RequestedWidth>960</RequestedWidth>
+    <RequestedHeight>540</RequestedHeight>
+  </DefaultSettings>
+  <Permissions>Restricted</Permissions>
+</OfficeApp>
